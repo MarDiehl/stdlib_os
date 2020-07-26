@@ -23,7 +23,8 @@ module os
     
     character(len=*), intent(in) :: path
     
-    if(chdir_c(f_to_c_path(path)) /= 0_C_INT) error stop
+    if(chdir_c(f_to_c_path(path)) /= 0_C_INT) &
+      error stop 'chdir: cannot change directory'
 
   end subroutine chdir
   
@@ -36,7 +37,8 @@ module os
     integer(C_INT)                               :: stat
 
     call getcwd_c(cwd,stat)
-    if(stat /= 0) error stop
+    if(stat /= 0) &
+      error stop 'getcwd: cannot determine current working directory'
 
     getcwd = c_to_f_path(cwd)
 
@@ -56,7 +58,8 @@ module os
       mode_ = int(O'777',C_INT)
     endif
  
-    if(mkdir_c(f_to_c_path(path),mode_) /= 0_C_INT) error stop
+    if(mkdir_c(f_to_c_path(path),mode_) /= 0_C_INT) &
+      error stop 'mkdir: cannot create directory'
     
   end subroutine mkdir
   
@@ -65,7 +68,8 @@ module os
     
     character(len=*), intent(in) :: src,dst
     
-    if(rename_c(f_to_c_path(src),f_to_c_path(dst)) /= 0_C_INT) error stop
+    if(rename_c(f_to_c_path(src),f_to_c_path(dst)) /= 0_C_INT) &
+      error stop 'rename: cannot rename file/directory'
     
   end subroutine rename
   
@@ -74,7 +78,8 @@ module os
     
     character(len=*), intent(in) :: path
     
-    if(rmdir_c(f_to_c_path(path)) /= 0_C_INT) error stop
+    if(rmdir_c(f_to_c_path(path)) /= 0_C_INT) &
+      error stop 'rmdir: cannot remove directory'
     
   end subroutine rmdir
   
@@ -84,7 +89,8 @@ module os
     
     character(len=*), intent(in) :: path
     
-    if(unlink_c(f_to_c_path(path)) /= 0_C_INT) error stop
+    if(unlink_c(f_to_c_path(path)) /= 0_C_INT) &
+      error stop 'unlink: cannot unlink (delete) file'
     
   end subroutine unlink
 

@@ -106,7 +106,8 @@ module os_path
 
     integer :: i,j
    
-    if(isabs(path1) .neqv. isabs(path2)) error stop
+    if(isabs(path1) .neqv. isabs(path2)) &
+      error stop 'commonpath: cannot mix absolute and relative paths'
 
     j = 0
     do i=1,minval([len_trim(path1),len_trim(path2),maxPathLen])
@@ -260,7 +261,8 @@ module os_path
     character(len=*), intent(in) :: path
     
     getatime = getatime_c(f_to_c_path(path))
-    if(getatime < 0.0) error stop
+    if(getatime < 0.0) &
+      error stop 'getatime: could not determine file access time'
 
   end function getatime
 
@@ -271,7 +273,8 @@ module os_path
     character(len=*), intent(in) :: path
     
     getmtime = getmtime_c(f_to_c_path(path))
-    if(getmtime < 0.0) error stop
+    if(getmtime < 0.0) &
+      error stop 'getmtime: could not determine file modification time'
 
   end function getmtime
 
@@ -282,7 +285,8 @@ module os_path
     character(len=*), intent(in) :: path
     
     getctime = getctime_c(f_to_c_path(path))
-    if(getctime < 0.0) error stop
+    if(getctime < 0.0) &
+      error stop 'getctime: could not determine file creation time'
 
   end function getctime
 
@@ -293,7 +297,8 @@ module os_path
     character(len=*), intent(in) :: path
     
     getsize = getsize_c(f_to_c_path(path))
-    if(getsize < 0) error stop
+    if(getsize < 0) &
+      error stop 'getsize: could not determine file size'
 
   end function getsize
   
@@ -370,7 +375,7 @@ module os_path
     if(isabs(path2)) then
       join = join1(trim(path2))
     else
-      join = join1(trim(path1)//'/'//trim(path2))
+      join = join1(trim(path1)//sep//trim(path2))
     endif
     
   end function join2
@@ -446,7 +451,7 @@ module os_path
        endif
        i = j+index(normpath(j+1:l),'../')
     enddo
-    if(len_trim(normpath) == 0) normpath = '/'
+    if(len_trim(normpath) == 0) normpath = sep
   
     normpath = trim(normpath)
 

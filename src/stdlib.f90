@@ -65,10 +65,22 @@ module stdlib
     module procedure expandvars
   end interface stdlib_os_path_expandvars
 
-  !  getatime, &
-  !  getmtime, &
-  !  getctime, &
-  !  getsize, &
+  interface stdlib_os_path_getatime
+    module procedure getatime
+  end interface stdlib_os_path_getatime
+
+  interface stdlib_os_path_getctime
+    module procedure getctime
+  end interface stdlib_os_path_getctime
+
+  interface stdlib_os_path_getmtime
+    module procedure getmtime
+  end interface stdlib_os_path_getmtime
+
+  interface stdlib_os_path_getsize
+    module procedure getsize
+  end interface stdlib_os_path_getsize
+
   !  isabs, &
   !  isdir, &
   !  isfile, &
@@ -93,11 +105,11 @@ module stdlib
     stdlib_os_path_dirname, &
     stdlib_os_path_exists, &
     stdlib_os_path_expanduser, &
-    stdlib_os_path_expandvars
-    !stdlib_os_path_getatime, &
-    !stdlib_os_path_getmtime, &
-    !stdlib_os_path_getctime, &
-    !stdlib_os_path_getsize, &
+    stdlib_os_path_expandvars, &
+    stdlib_os_path_getatime, &
+    stdlib_os_path_getmtime, &
+    stdlib_os_path_getctime, &
+    stdlib_os_path_getsize 
     !stdlib_os_path_isabs, &
     !stdlib_os_path_isdir, &
     !stdlib_os_path_isfile, &
