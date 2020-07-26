@@ -141,7 +141,7 @@ module os_path
     character(len=:), allocatable :: commonpath
     character(len=*), intent(in)  :: path1,path2,path3,path4,path5
 
-    commonpath = commonpath4(commonpath2(path1,path2),path3,path4,path4)
+    commonpath = commonpath4(commonpath2(path1,path2),path3,path4,path5)
   
   end function commonpath5
  

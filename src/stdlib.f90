@@ -58,7 +58,7 @@ module stdlib
   end interface stdlib_os_path_exists
 
   interface stdlib_os_path_expanduser
-    module procedureexpanduser
+    module procedure expanduser
   end interface stdlib_os_path_expanduser
 
   interface stdlib_os_path_expandvars
