@@ -80,15 +80,31 @@ module stdlib
   interface stdlib_os_path_getsize
     module procedure getsize
   end interface stdlib_os_path_getsize
-
-  !  isabs, &
-  !  isdir, &
-  !  isfile, &
-  !  islink, &
-  !  ismount, &
+  
+  interface stdlib_os_path_isabs
+    module procedure isabs
+  end interface stdlib_os_path_isabs
+  
+  interface stdlib_os_path_isdir
+    module procedure isdir
+  end interface stdlib_os_path_isdir
+  
+  interface stdlib_os_path_isfile
+    module procedure isfile
+  end interface stdlib_os_path_isfile
+  
+  interface stdlib_os_path_islink
+    module procedure islink
+  end interface stdlib_os_path_islink
+  
+  interface stdlib_os_path_ismount
+    module procedure ismount
+  end interface stdlib_os_path_ismount
   !  join, &
   !  normcase, &
-  !  normpath, &
+  interface stdlib_os_path_normpath
+    module procedure normpath
+  end interface stdlib_os_path_normpath
   !  samefile
 
   public :: &
@@ -109,15 +125,15 @@ module stdlib
     stdlib_os_path_getatime, &
     stdlib_os_path_getmtime, &
     stdlib_os_path_getctime, &
-    stdlib_os_path_getsize 
-    !stdlib_os_path_isabs, &
-    !stdlib_os_path_isdir, &
-    !stdlib_os_path_isfile, &
-    !stdlib_os_path_islink, &
-    !stdlib_os_path_ismount, &
+    stdlib_os_path_getsize, &
+    stdlib_os_path_isabs, &
+    stdlib_os_path_isdir, &
+    stdlib_os_path_isfile, &
+    stdlib_os_path_islink, &
+    stdlib_os_path_ismount, &
     !stdlib_os_path_join, &
     !stdlib_os_path_normcase, &
-    !stdlib_os_path_normpath, &
+    stdlib_os_path_normpath
     !stdlib_os_path_samefile
 
 end module stdlib

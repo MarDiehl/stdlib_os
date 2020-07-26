@@ -47,6 +47,12 @@ module os_path_c
       integer(C_INT) :: islink_c
       character(kind=C_CHAR), dimension(pathLen_c), intent(in) :: path
     end function islink_c
+    
+    function ismount_c(path) bind(C)
+      use internal
+      integer(C_INT) :: ismount_c
+      character(kind=C_CHAR), dimension(pathLen_c), intent(in) :: path
+    end function ismount_c
 
     function samefile_c(path1,path2) bind(C)
       use internal

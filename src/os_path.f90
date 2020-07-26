@@ -352,6 +352,7 @@ module os_path
     logical                      :: ismount
     character(len=*), intent(in) :: path
     
+    ismount = ismount_c(f_to_c_path(path)) > 0
 
   end function ismount
 
@@ -428,35 +429,33 @@ module os_path
     normpath = trim(path)
     l = len_trim(normpath)
     do i = l,3,-1
-      if (normpath(i-2:i) == '/./') normpath(i-1:l) = normpath(i+1:l)//'  '
+      if (normpath(i-2:i) == sep//'.'//sep) normpath(i-1:l) = normpath(i+1:l)//'  '
     enddo
   
     ! remove // from path
     l = len_trim(normpath)
     do i = l,2,-1
-      if (normpath(i-1:i) == '//') normpath(i-1:l) = normpath(i:l)//' '
+      if (normpath(i-1:i) == sep//sep) normpath(i-1:l) = normpath(i:l)//' '
     enddo
   
     ! remove ../ and corresponding directory from rectifyPath
     l = len_trim(normpath)
-    i = index(normpath(i:l),'../')
+    i = index(normpath(i:l),'..'//sep)
     j = 0
     do while (i > j)
-       j = scan(normpath(1:i-2),'/',back=.true.)
+       j = scan(normpath(1:i-2),sep,back=.true.)
        normpath(j+1:l) = normpath(i+3:l)//repeat(' ',2+i-j)
-       if (normpath(j+1:j+1) == '/') then                                                           !search for '//' that appear in case of XXX/../../XXX
+       if (normpath(j+1:j+1) == sep) then                                                           !search for '//' that appear in case of XXX/../../XXX
          k = len_trim(normpath)
          normpath(j+1:k-1) = normpath(j+2:k)
          normpath(k:k) = ' '
        endif
-       i = j+index(normpath(j+1:l),'../')
+       i = j+index(normpath(j+1:l),'..'//sep)
     enddo
     if(len_trim(normpath) == 0) normpath = sep
   
     normpath = trim(normpath)
 
-    call check_path_len(normpath)
-  
   end function normpath
 
 
