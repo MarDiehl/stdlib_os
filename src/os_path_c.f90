@@ -12,17 +12,17 @@ module os_path_c
       character(kind=C_CHAR), dimension(*), intent(in) :: path
     end function getatime_c
 
-    function getmtime_c(path) bind(C)
-      use, intrinsic :: ISO_C_Binding
-      real(C_DOUBLE) :: getmtime_c
-      character(kind=C_CHAR), dimension(*), intent(in) :: path
-    end function getmtime_c
-
     function getctime_c(path) bind(C)
       use, intrinsic :: ISO_C_Binding
       real(C_DOUBLE) :: getctime_c
       character(kind=C_CHAR), dimension(*), intent(in) :: path
     end function getctime_c
+
+    function getmtime_c(path) bind(C)
+      use, intrinsic :: ISO_C_Binding
+      real(C_DOUBLE) :: getmtime_c
+      character(kind=C_CHAR), dimension(*), intent(in) :: path
+    end function getmtime_c
 
     function getsize_c(path) bind(C)
       use, intrinsic :: ISO_C_Binding

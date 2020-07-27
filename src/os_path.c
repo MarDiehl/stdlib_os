@@ -2,30 +2,34 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <string.h>
-#include <signal.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "internal.h"
+
+double st_xtime2double(struct timespec time){
+  return (double)time.tv_sec+((double)time.tv_nsec)*1.e-9;
+}
 
 double getatime_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */
     return -1.0;
-  return (double)statbuf.st_atime; /* better use struct timespec st_atim */
-}
-
-double getmtime_c(char *path) {
-  struct stat statbuf;
-  if(stat(path, &statbuf) != 0)                                                                     /* error */
-    return -1.0;
-  return (double)statbuf.st_mtime; /* better use struct timespec st_mtim */
+  return st_xtime2double(statbuf.st_atim);
 }
 
 double getctime_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */
     return -1.0;
-  return (double)statbuf.st_ctime; /* better use struct timespec st_ctim */
+  return st_xtime2double(statbuf.st_ctim);
+}
+
+double getmtime_c(char *path) {
+  struct stat statbuf;
+  if(stat(path, &statbuf) != 0)                                                                     /* error */
+    return -1.0;
+  return st_xtime2double(statbuf.st_mtim);
 }
 
 long getsize_c(char *path) {
