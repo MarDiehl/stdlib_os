@@ -85,8 +85,6 @@ module os_path
       endif
     endif
 
-    call check_path_len(path)
-
   end function basename
 
 
@@ -110,11 +108,11 @@ module os_path
       error stop 'commonpath: cannot mix absolute and relative paths'
 
     j = 0
-    do i=1,minval([len_trim(path1),len_trim(path2),maxPathLen])
+    do i=1,min(len_trim(path1),len_trim(path2))
       if(path1(i:i) /= path2(i:i)) exit
       if(path1(i:i) == sep) j = i
     enddo
-    if(i-1==minval([len_trim(path1),len_trim(path2),maxPathLen])) j = i-1
+    if(i-1==min(len_trim(path1),len_trim(path2))) j = i-1
     commonpath = path1(:j)
   
   end function commonpath2
@@ -155,7 +153,7 @@ module os_path
 
     integer :: i
    
-    do i=1,minval([len_trim(path1),len_trim(path2),maxPathLen])
+    do i=1,min(len_trim(path1),len_trim(path2))
       if(path1(i:i) /= path2(i:i)) exit 
     enddo
     commonprefix = path1(:i-1)
@@ -213,7 +211,7 @@ module os_path
  
 
   function expandvars(path)
-    
+    ! ToDo: get working and write for arbitrary length 
     character(len=:), allocatable :: expandvars
     character(len=*), intent(in)  :: path
 
@@ -363,8 +361,6 @@ module os_path
     character(len=*), intent(in)  :: path1
   
     join = trim(path1)
-
-    call check_path_len(join)
 
   end function join1
   

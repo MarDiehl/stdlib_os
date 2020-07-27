@@ -33,8 +33,8 @@ module os
     
     character(len=:), allocatable :: getcwd
     
-    character(kind=C_CHAR), dimension(pathLen_c) :: cwd
-    integer(C_INT)                               :: stat
+    character(kind=C_CHAR), dimension(maxPathLen_c) :: cwd
+    integer(C_INT)                                  :: stat
 
     call getcwd_c(cwd,stat)
     if(stat /= 0) &

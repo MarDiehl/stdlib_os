@@ -64,9 +64,9 @@ int ismount_c(char *path) {
   if(stat(path, &statbuf_path) != 0)                                                                /* error */
     return 0;
   
-  char parent[PathLen+3];
+  char parent[strlen(path)+3];
   strcpy(parent,path);
-  strcat(parent,"/.."); /* make sep a variable */
+  strcat(parent,"/.."); /* make / a parameter 'sep' */
   struct stat statbuf_parent;
   if(stat(parent, &statbuf_parent) != 0)                                                            /* error, assume mounted */
     return 1;
