@@ -1,9 +1,6 @@
 program stdlib_test
   use stdlib
   
-  print*, ismount('/')
-  print*, ismount('//')
-  print*, ismount('////d')
-  print*, ismount('/home')
-  print*, ismount('/home/m')
+  print*, stdlib_os_path_getatime('/home/m/t')
+  print*, stdlib_os_path_getctime('/home/m/t')
 end program stdlib_test

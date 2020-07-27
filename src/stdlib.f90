@@ -5,7 +5,9 @@ module stdlib
   
   implicit none
 
-  character, parameter :: os_pathsep = pathsep
+  private
+
+  character, parameter, public :: os_pathsep = pathsep
 
   interface stdlib_os_chdir
     module procedure chdir
