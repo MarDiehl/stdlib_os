@@ -45,6 +45,9 @@ module stdlib
   interface stdlib_os_path_commonpath
     module procedure commonpath1
     module procedure commonpath2
+    module procedure commonpath3
+    module procedure commonpath4
+    module procedure commonpath5
   end interface stdlib_os_path_commonpath
 
   interface stdlib_os_path_commonprefix

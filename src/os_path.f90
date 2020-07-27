@@ -108,20 +108,24 @@ module os_path
     character(len=:), allocatable :: commonpath
     character(len=*), intent(in)  :: path1,path2
 
-    character(len=:), allocatable :: path1_,path2_
+    character(len=:), allocatable :: path1_clean, path2_clean
     integer :: i,j
 
-    path1_ = normpath(path1)
-    path2_ = normpath(path2)
-    if(isabs(path1_) .neqv. isabs(path2_)) &
+    if(isabs(path1) .neqv. isabs(path2)) &
       error stop 'commonpath: cannot mix absolute and relative paths'
 
-    j = 0
-    do i=1,min(len_trim(path1_),len_trim(path2_))
-      if(path1_(i:i) /= path2_(i:i)) exit
-      if(path1_(i:i) == sep) j = i-1
-    enddo
-    commonpath = path1_(:j)
+    path1_clean = clean(path1)//sep
+    path2_clean = clean(path2)//sep
+    if(path1_clean == path2_clean) then
+      commonpath = clean(path1_clean)
+    else
+      j = 0
+      do i=1,min(len_trim(path1_clean),len_trim(path2_clean))
+        if(path1_clean(i:i) /= path2_clean(i:i)) exit
+        if(path1_clean(i:i) == sep) j = i
+      enddo
+      commonpath = clean_trail(path1_clean(:j))
+    endif
 
   end function commonpath2
 
@@ -377,9 +381,9 @@ module os_path
     character(len=*), intent(in)  :: path1, path2
 
     if(isabs(path2)) then
-      join = join1(trim(path2))
+      join = trim(path2)
     else
-      join = join1(trim(path1)//sep//trim(path2))
+      join = trim(path1)//sep//trim(path2)
     endif
 
   end function join2
@@ -422,6 +426,7 @@ module os_path
   end function normcase
 
 
+  ! Note: Two leading slashes theoretically require special treatment
   pure function normpath(path)
 
     character(len=*), intent(in)  :: path
@@ -432,82 +437,15 @@ module os_path
     if(len_trim(path) == 0) then
       normpath = curdir
     else
-      normpath = remove_sep(remove_curdir(path))
-      
+      normpath = clean(path)
       do 
-        normpath = clean_trail(clean_lead(normpath))
+        normpath = clean(normpath)
         i = index(normpath,sep//curdir//curdir)
-        if(i==0) exit
-        if(verify(normpath(:i-1),'/.')==0) exit
-        normpath = normpath(:index(normpath(:i-1),sep))//normpath(min(i+4,len(normpath)):)
+        if(i==0 .or. verify(normpath(:i-1),sep//curdir)==0) exit
+        normpath = normpath(:index(normpath(:i-1),sep,back=.true.))//normpath(min(i+4,len(normpath)):)
       enddo
     endif
     
-    contains
-
-    pure function remove_curdir(p) result(p_)
-      
-      character(len=:), allocatable :: p_
-      character(len=*), intent(in)  :: p
-      
-      integer :: i
-      
-      p_ = trim(p)
-      do i = len(p_),3,-1
-        if (p_(i-1:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//' '
-      enddo
-      p_ = trim(p_)
-    
-    end function remove_curdir
-   
-    pure function remove_sep(p) result(p_)
-      
-      character(len=:), allocatable :: p_
-      character(len=*), intent(in)  :: p
-      
-      integer :: i
-      
-      p_ = trim(p)
-      do i = len(p_),2,-1
-        if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
-      enddo
-      p_ = trim(p_)
-    
-    end function remove_sep
-    
-    pure function clean_lead(p) result(p_)
-      
-      character(len=:), allocatable :: p_
-      character(len=*), intent(in)  :: p
-      
-      p_ = trim(p)
-      do while (index(p_,sep//curdir//curdir) == 1)
-         if(len(p_)>3) then
-           p_ = p_(4:)
-         else
-           p_ = sep
-         endif
-      enddo 
-    
-    end function clean_lead
-    
-    pure function clean_trail(p) result(p_)
-      
-      character(len=:), allocatable :: p_
-      character(len=*), intent(in)  :: p
-
-      p_ = trim(p)
-      if(len_trim(p_)>1) then
-        if(p_(len_trim(p_):len_trim(p_)) == curdir .and. p_(len_trim(p_)-1:len_trim(p_)-1) /= curdir) &
-          p_ = p_(:len_trim(p_)-1)
-      endif
-
-      if(len_trim(p_)>1) then
-        if(p_(len_trim(p_):len_trim(p_)) == sep)    p_ = p_(:len_trim(p_)-1)
-      endif
-   
-   end function clean_trail
-
   end function normpath
 
   ! realpath
@@ -518,12 +456,50 @@ module os_path
     character(len=*), intent(in), optional :: start
     character(len=:), allocatable          :: relpath
     
-    character(len=:), allocatable          :: commonpath_, path_
-
-    if(present(start)) &
-      error stop 'relpath: start not implemented'
+    character(len=:), allocatable :: common_, path_, start_
+    integer :: l_common, l_path, l_start, i, j
    
-       
+    if(isabs(path)) then
+      path_ = normpath(path)
+    else
+      path_ = normpath(join(getcwd(),path))
+    endif
+    l_path = len(path_)
+
+    if(.not. present(start)) then
+      start_ = getcwd()
+    else
+      if(isabs(start)) then
+        start_ = normpath(start)
+      else
+        start_ = normpath(join(getcwd(),start))
+      endif
+    endif
+    l_start = len(start_)
+  
+    common_ = commonpath(start_,path_)
+    l_common = len(common_)
+
+    if(l_path == l_common) then
+      relpath = ''
+    else
+      if(common_ == sep) then
+        relpath = path_(l_common+1:) 
+      else
+        relpath = path_(l_common+2:)
+      endif
+    endif 
+    
+    if(start_ /= common_) then
+      j = 0
+      do i = l_common, len(start_(l_common:))
+        if(start_(i:i) == sep) j = j+1 
+      enddo
+      relpath = repeat(curdir//curdir//sep,j)//relpath
+    endif 
+
+    relpath = normpath(relpath)
+
   end function relpath
  
 
@@ -546,5 +522,81 @@ module os_path
   ! splitdrive
 
   ! splitext
+
+
+!--------------------------------------------------------------------------------------------------
+  pure function clean(p) result(p_)
+
+    character(len=:), allocatable :: p_
+    character(len=*), intent(in)  :: p
+
+    p_ = clean_trail(clean_lead(remove_sep(remove_curdir(p))))
+
+  end function clean
+
+
+  pure function clean_lead(p) result(p_)
+    
+    character(len=:), allocatable :: p_
+    character(len=*), intent(in)  :: p
+    
+    p_ = trim(p)
+    do while (index(p_,sep//curdir//curdir) == 1)
+       if(len(p_)>3) then
+         p_ = p_(4:)
+       else
+         p_ = sep
+       endif
+    enddo 
+  
+  end function clean_lead
+  
+  pure function clean_trail(p) result(p_)
+    
+    character(len=:), allocatable :: p_
+    character(len=*), intent(in)  :: p
+
+    p_ = trim(p)
+    if(len_trim(p_)>1) then
+      if(p_(len_trim(p_):len_trim(p_)) == curdir .and. p_(len_trim(p_)-1:len_trim(p_)-1) == sep) &
+        p_ = p_(:len_trim(p_)-1)
+    endif
+
+    if(len_trim(p_)>1) then
+      if(p_(len_trim(p_):len_trim(p_)) == sep)    p_ = p_(:len_trim(p_)-1)
+    endif
+  
+  end function clean_trail
+
+
+  pure function remove_curdir(p) result(p_)
+    
+    character(len=:), allocatable :: p_
+    character(len=*), intent(in)  :: p
+    
+    integer :: i
+    
+    p_ = trim(p)
+    do i = len(p_),3,-1
+      if (p_(i-2:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//'  '
+    enddo
+    p_ = trim(p_)
+  
+  end function remove_curdir
+
+  pure function remove_sep(p) result(p_)
+    
+    character(len=:), allocatable :: p_
+    character(len=*), intent(in)  :: p
+    
+    integer :: i
+    
+    p_ = trim(p)
+    do i = len(p_),2,-1
+      if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
+    enddo
+    p_ = trim(p_)
+  
+  end function remove_sep
 
 end module os_path
