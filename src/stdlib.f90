@@ -108,6 +108,10 @@ module stdlib
     module procedure normpath
   end interface stdlib_os_path_normpath
   !  samefile
+  interface stdlib_os_path_relpath
+    module procedure relpath
+  end interface stdlib_os_path_relpath
+  !  samefile
 
   public :: &
     stdlib_os_chdir, &    
@@ -135,7 +139,8 @@ module stdlib
     stdlib_os_path_ismount, &
     !stdlib_os_path_join, &
     !stdlib_os_path_normcase, &
-    stdlib_os_path_normpath
+    stdlib_os_path_normpath, &
     !stdlib_os_path_samefile
+    stdlib_os_path_relpath
 
 end module stdlib

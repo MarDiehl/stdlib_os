@@ -5,7 +5,7 @@ module os_path
   use os_path_c
 
   implicit none
-  character, parameter, public :: sep = '/'
+  character(len=*), parameter, public :: sep = '/'
 
   private
   public :: &
@@ -29,7 +29,8 @@ module os_path
     join, &
     normcase, &
     normpath, &
-    samefile
+    samefile, &
+    relpath
 
   public :: &
     commonpath1, &
@@ -107,18 +108,20 @@ module os_path
     character(len=:), allocatable :: commonpath
     character(len=*), intent(in)  :: path1,path2
 
+    character(len=:), allocatable :: path1_,path2_
     integer :: i,j
 
-    if(isabs(path1) .neqv. isabs(path2)) &
+    path1_ = normpath(path1)
+    path2_ = normpath(path2)
+    if(isabs(path1_) .neqv. isabs(path2_)) &
       error stop 'commonpath: cannot mix absolute and relative paths'
 
     j = 0
-    do i=1,min(len_trim(path1),len_trim(path2))
-      if(path1(i:i) /= path2(i:i)) exit
-      if(path1(i:i) == sep) j = i
+    do i=1,min(len_trim(path1_),len_trim(path2_))
+      if(path1_(i:i) /= path2_(i:i)) exit
+      if(path1_(i:i) == sep) j = i-1
     enddo
-    if(i-1==min(len_trim(path1),len_trim(path2))) j = i-1
-    commonpath = path1(:j)
+    commonpath = path1_(:j)
 
   end function commonpath2
 
@@ -423,41 +426,106 @@ module os_path
 
     character(len=*), intent(in)  :: path
     character(len=:), allocatable :: normpath
-    integer :: i,j,k,l
+    
+    integer :: i
 
-    ! remove /./ from path
-    normpath = trim(path)
-    l = len_trim(normpath)
-    do i = l,3,-1
-      if (normpath(i-2:i) == sep//'.'//sep) normpath(i-1:l) = normpath(i+1:l)//'  '
-    enddo
+    if(len_trim(path) == 0) then
+      normpath = curdir
+    else
+      normpath = remove_sep(remove_curdir(path))
+      
+      do 
+        normpath = clean_trail(clean_lead(normpath))
+        i = index(normpath,sep//curdir//curdir)
+        if(i==0) exit
+        if(verify(normpath(:i-1),'/.')==0) exit
+        normpath = normpath(:index(normpath(:i-1),sep))//normpath(min(i+4,len(normpath)):)
+      enddo
+    endif
+    
+    contains
 
-    ! remove // from path
-    l = len_trim(normpath)
-    do i = l,2,-1
-      if (normpath(i-1:i) == sep//sep) normpath(i-1:l) = normpath(i:l)//' '
-    enddo
+    pure function remove_curdir(p) result(p_)
+      
+      character(len=:), allocatable :: p_
+      character(len=*), intent(in)  :: p
+      
+      integer :: i
+      
+      p_ = trim(p)
+      do i = len(p_),3,-1
+        if (p_(i-1:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//' '
+      enddo
+      p_ = trim(p_)
+    
+    end function remove_curdir
+   
+    pure function remove_sep(p) result(p_)
+      
+      character(len=:), allocatable :: p_
+      character(len=*), intent(in)  :: p
+      
+      integer :: i
+      
+      p_ = trim(p)
+      do i = len(p_),2,-1
+        if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
+      enddo
+      p_ = trim(p_)
+    
+    end function remove_sep
+    
+    pure function clean_lead(p) result(p_)
+      
+      character(len=:), allocatable :: p_
+      character(len=*), intent(in)  :: p
+      
+      p_ = trim(p)
+      do while (index(p_,sep//curdir//curdir) == 1)
+         if(len(p_)>3) then
+           p_ = p_(4:)
+         else
+           p_ = sep
+         endif
+      enddo 
+    
+    end function clean_lead
+    
+    pure function clean_trail(p) result(p_)
+      
+      character(len=:), allocatable :: p_
+      character(len=*), intent(in)  :: p
 
-    ! remove ../ and corresponding directory from rectifyPath
-    l = len_trim(normpath)
-    i = index(normpath(i:l),'..'//sep)
-    j = 0
-    do while (i > j)
-       j = scan(normpath(1:i-2),sep,back=.true.)
-       normpath(j+1:l) = normpath(i+3:l)//repeat(' ',2+i-j)
-       if (normpath(j+1:j+1) == sep) then                                                           !search for '//' that appear in case of XXX/../../XXX
-         k = len_trim(normpath)
-         normpath(j+1:k-1) = normpath(j+2:k)
-         normpath(k:k) = ' '
-       endif
-       i = j+index(normpath(j+1:l),'..'//sep)
-    enddo
-    if(len_trim(normpath) == 0) normpath = sep
+      p_ = trim(p)
+      if(len_trim(p_)>1) then
+        if(p_(len_trim(p_):len_trim(p_)) == curdir .and. p_(len_trim(p_)-1:len_trim(p_)-1) /= curdir) &
+          p_ = p_(:len_trim(p_)-1)
+      endif
 
-    normpath = trim(normpath)
+      if(len_trim(p_)>1) then
+        if(p_(len_trim(p_):len_trim(p_)) == sep)    p_ = p_(:len_trim(p_)-1)
+      endif
+   
+   end function clean_trail
 
   end function normpath
 
+  ! realpath
+
+  function relpath(path,start)
+    
+    character(len=*), intent(in)           :: path
+    character(len=*), intent(in), optional :: start
+    character(len=:), allocatable          :: relpath
+    
+    character(len=:), allocatable          :: commonpath_, path_
+
+    if(present(start)) &
+      error stop 'relpath: start not implemented'
+   
+       
+  end function relpath
+ 
 
   function samefile(path1,path2)
 
@@ -472,5 +540,11 @@ module os_path
     samefile = return_value > 0
 
   end function samefile
+  
+  ! split
+  
+  ! splitdrive
+
+  ! splitext
 
 end module os_path

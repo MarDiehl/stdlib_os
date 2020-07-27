@@ -4,7 +4,9 @@ module os
   use os_c
 
   implicit none
-  character, parameter, public :: pathsep = ':'
+  character(len=*), parameter, public :: &
+    pathsep = ':', &
+    curdir = '.'
 
   private
   public :: &
