@@ -5,11 +5,13 @@ program stdlib_test
 
   print*, 'current working directory: ',stdlib_os_getcwd()
   print*, 'home directory: ',stdlib_os_path_expanduser('~')
+  print*, '$SHELL: ', stdlib_os_path_expandvars('$SHELL')
 
   ! start in defined situation
   call stdlib_os_chdir('/home')
   if(.not. stdlib_os_path_isdir('/bin')) &
     error stop "'/bin' does not exist"
+
 
   ! basename
   if(stdlib_os_path_basename('/../') /= '') &
@@ -20,6 +22,7 @@ program stdlib_test
 
   if(stdlib_os_path_basename('/aa/bb/c') /= 'c') &
     error stop "basename('/aa/bb/c') /= 'c'"
+
 
   ! dirname
   if(stdlib_os_path_dirname('xxx') /= '') &
@@ -111,6 +114,7 @@ program stdlib_test
 
   if(stdlib_os_path_normpath('/aaa/bbb/ccc/ddd/../uuu') /= '/aaa/bbb/ccc/uuu') &
     error stop "norpath('/aaa/bbb/ccc/ddd/../uuu') /= '/aaa/bbb/ccc/uuu'"
+
 
   ! relpath
   if(stdlib_os_path_relpath('/home','/home') /= '.') &

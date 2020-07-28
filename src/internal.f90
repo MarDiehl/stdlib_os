@@ -79,6 +79,7 @@ module internal
   end function gethome
 
 
+  ! ToDo: Check whether the header can be used in Fortran (true parameter!)
   function PATH_MAX()
 
     integer(C_INT) :: PATH_MAX

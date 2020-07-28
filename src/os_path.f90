@@ -239,45 +239,59 @@ module os_path
 
 
   function expandvars(path)
-    ! ToDo: get working and write for arbitrary length
+
     character(len=:), allocatable :: expandvars
     character(len=*), intent(in)  :: path
 
     character(len=*), parameter :: valid_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ'&
                                               &'abcdefghijklmnopqrstuvwxyz'&
                                               &'1234567890'&
-                                              &'{}'&
                                               &'_'
-    character(len=4096)         :: path_new, var_value
-    character(len=:), allocatable :: var_name
-    integer :: i,j,s,e
-
-    i = 1
-    j = 1
-    do while(i<len_trim(path))
-      if(path(i:i) == '$') then
-        if(len_trim(path) == i) then
-          path_new(j:j) = path(i:i)
-          i = i + 1
-        else
-          s = i + 1
-          e = s + verify(path(i+1:),valid_chars)
-          if(e==s) e = len_trim(path)
-          var_name = path(e:s)
-          if(var_name(1:1) == '{' .and. var_name(len_trim(var_name):len_trim(var_name)) == '}') &
-            var_name = var_name(2:len_trim(var_name)-1)
-
-          call get_environment_variable(var_name,var_value)
-
-          i = e + 1
-        endif
-      else
-        path_new(j:j) = path(i:i)
-        i = i + 1
-        j = j + 1
-      endif
+    character(len=:), allocatable :: val
+    integer :: i,j,stat
+    
+    allocate(character(len=PATH_MAX()-1)::val)
+    expandvars = path
+    
+    i=1
+    do while(i< len(expandvars))
+      start: if(expandvars(i:i)=='$') then
+        brackets: if(expandvars(i+1:i+1) == '{') then
+          if(len(expandvars(i+1:))>2) then
+            j = verify(expandvars(i+2:),valid_chars)
+            if(expandvars(i+j+1:i+j+1) == '}') then
+              call get_environment_variable(expandvars(i+2:i+j),val,status=stat)
+              if(stat == 0) then
+                expandvars = substitute(expandvars,trim(val),i,i+j+1)
+                i = i+len_trim(val)
+              else
+                i = i+1
+              endif
+            else
+              i = i+1
+            endif
+          else
+            i = i+1
+          endif
+        else brackets
+          j = verify(expandvars(i+1:)//'#',valid_chars)
+          if(j /= 0) then
+            call get_environment_variable(expandvars(i+1:i+j-1),val,status=stat)
+            if(stat == 0) then
+              expandvars = substitute(expandvars,trim(val),i,i+j-1)
+              i = i+len_trim(val)
+            else
+              i = i+1
+            endif
+          else
+            i = i+1
+          endif
+        endif brackets
+      else start
+        i = i+1
+      endif start
     enddo
-
+  
   end function expandvars
 
 
@@ -621,7 +635,7 @@ module os_path
     character(len=*), intent(in)  :: parent,substituent
     integer,          intent(in)  :: low,high
 
-    if(low>high .or. max(low,high)>len(parent)) &
+    if(low>high .or. max(low,high)>len(parent) .or. low<1) &
       error stop 'substitute: invalid limits (low/high)'
 
     substitute = parent(:low-1)//substituent
