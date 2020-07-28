@@ -54,7 +54,7 @@ int isfile_c(char *path) {
 
 int islink_c(char *path) {
   struct stat statbuf;
-  if(stat(path, &statbuf) != 0)                                                                     /* error */
+  if(lstat(path, &statbuf) != 0)                                                                     /* error */
     return 0;
   return S_ISLNK(statbuf.st_mode);                                                                 /* 1 => is directory, 0 => this is NOT a directory */
 }
