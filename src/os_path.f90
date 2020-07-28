@@ -547,11 +547,45 @@ module os_path
 
   end function samefile
 
-  ! split
+  function split(path)
 
+    character(len=*), intent(in)  :: path
+    character(len=:), allocatable :: head,tail
+    character(len=:), allocatable, dimension(:) :: split
+    integer :: s
+
+    s = scan(path,sep,back=.True.)
+
+    allocate(character(len=max(len(head),len(tail)))::split(2))
+    split(1) = head
+    split(2) = tail
+
+  end function split
+  
   ! splitdrive
 
-  ! splitext
+  function splitext(path)
+
+    character(len=*), intent(in)  :: path
+    character(len=:), allocatable :: root,tail
+    character(len=:), allocatable, dimension(:) :: splitext
+    integer :: s
+
+    s = scan(path,'.',back=.True.)
+
+    if(s>1) then
+      root = path(:s-1)
+      tail = path(s:)
+    else
+      root = path
+      tail = ''
+    endif
+    
+    allocate(character(len=max(len(root),len(tail)))::splitext(2))
+    splitext(1) = root
+    splitext(2) = tail
+
+  end function splitext
 
 
 !--------------------------------------------------------------------------------------------------
