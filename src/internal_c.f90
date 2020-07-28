@@ -5,11 +5,17 @@ module internal_c
 
   interface
 
-    subroutine getuser_c(path, stat) bind(C)
+    subroutine getuser_c(user, stat) bind(C)
       use, intrinsic :: ISO_C_Binding
-      character(kind=C_CHAR), dimension(*), intent(out) :: path
+      character(kind=C_CHAR), dimension(*), intent(out) :: user
       integer(C_INT),                       intent(out) :: stat
     end subroutine getuser_c
+
+    subroutine gethome_c(home, stat) bind(C)
+      use, intrinsic :: ISO_C_Binding
+      character(kind=C_CHAR), dimension(*), intent(out) :: home
+      integer(C_INT),                       intent(out) :: stat
+    end subroutine gethome_c
 
     function PATH_MAX_c() bind(C)
       use, intrinsic :: ISO_C_Binding

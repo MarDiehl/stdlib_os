@@ -213,10 +213,27 @@ module os_path
   end function exists
 
 
-  pure function expanduser(path)
+  function expanduser(path)
 
     character(len=:), allocatable :: expanduser
     character(len=*), intent(in)  :: path
+
+    character(len=:), allocatable :: user
+    integer :: stat
+
+    user = "~"//getuser()
+    if(index(path,user)==1) then
+      expanduser = substitute(path,gethome(),1,len(user))
+    elseif(index(path,'~')==1) then
+      deallocate(user)
+      allocate(character(len=PATH_MAX()-1)::user)
+      call get_environment_variable('HOME',user,status=stat)
+      if(stat==0) then
+        expanduser = substitute(path,trim(user),1,1)
+      else
+        expanduser = substitute(path,gethome(),1,1)
+      endif
+    endif
 
   end function expanduser
 
@@ -598,5 +615,18 @@ module os_path
 
   end function remove_sep
 
+  pure function substitute(parent,substituent,low,high)
+
+    character(len=:), allocatable :: substitute
+    character(len=*), intent(in)  :: parent,substituent
+    integer,          intent(in)  :: low,high
+
+    if(low>high .or. max(low,high)>len(parent)) &
+      error stop 'substitute: invalid limits (low/high)'
+
+    substitute = parent(:low-1)//substituent
+    if(high<len(parent)) substitute = substitute//parent(high+1:)
+
+  end function substitute
 
 end module os_path

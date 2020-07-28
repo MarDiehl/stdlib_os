@@ -55,11 +55,28 @@ module internal
 
     call getuser_c(user,stat)
     if(stat /= 0) &
-      error stop 'getcwd: cannot determine user name'
+      error stop 'getuser: cannot determine user name'
 
     getuser = c_f_string(user)
 
   end function getuser
+
+
+  function gethome()
+
+    character(len=:), allocatable :: gethome
+
+    character(kind=C_CHAR), dimension(:), allocatable :: home
+    integer(C_INT)                                    :: stat
+
+    allocate(home(PATH_MAX()))
+    call gethome_c(home,stat)
+    if(stat /= 0) &
+      error stop 'gethome: cannot determine home directory'
+
+    gethome = c_f_string(home)
+
+  end function gethome
 
 
   function PATH_MAX()

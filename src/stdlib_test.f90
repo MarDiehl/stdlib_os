@@ -3,10 +3,10 @@ program stdlib_test
 
   implicit none
 
-  character(len=:), allocatable :: cwd
+  print*, 'current working directory: ',stdlib_os_getcwd()
+  print*, 'home directory: ',stdlib_os_path_expanduser('~')
 
   ! start in defined situation
-  cwd = stdlib_os_getcwd()
   call stdlib_os_chdir('/home')
   if(.not. stdlib_os_path_isdir('/bin')) &
     error stop "'/bin' does not exist"
