@@ -1,0 +1,22 @@
+module internal_c
+  implicit none
+
+  public
+
+  interface
+
+    subroutine getuser_c(path, stat) bind(C)
+      use, intrinsic :: ISO_C_Binding
+      character(kind=C_CHAR), dimension(*), intent(out) :: path
+      integer(C_INT),                       intent(out) :: stat
+    end subroutine getuser_c
+
+    function PATH_MAX_c() bind(C)
+      use, intrinsic :: ISO_C_Binding
+      integer(C_INT) :: PATH_MAX_c
+    end function PATH_MAX_c
+
+
+  end interface
+
+end module internal_c
