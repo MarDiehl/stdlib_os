@@ -1,17 +1,17 @@
 #include <stdio.h>
+#include <limits.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "internal.h"
 
 int chdir_c(const char *path){
   return chdir(path);
 }
 
 void getcwd_c(char cwd[], int *stat){
-  char cwd_tmp[PathLen];
-  if(getcwd(cwd_tmp, sizeof(cwd_tmp)) == cwd_tmp){
+  char cwd_tmp[PATH_MAX];
+  if(getcwd(cwd_tmp, sizeof(cwd_tmp)) != NULL){
     strcpy(cwd,cwd_tmp);
     *stat = 0;
   }

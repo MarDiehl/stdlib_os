@@ -5,7 +5,6 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "internal.h"
 
 double st_xtime2double(struct timespec time){
   return (double)time.tv_sec+((double)time.tv_nsec)*1.e-9;
@@ -67,24 +66,24 @@ int ismount_c(char *path) {
   struct stat statbuf_path;
   if(stat(path, &statbuf_path) != 0)                                                                /* error */
     return 0;
-  
+
   char parent[strlen(path)+3];
   strcpy(parent,path);
-  strcat(parent,"/.."); /* make / a parameter 'sep' */
+  strcat(parent,"/..");                                                                             /* Careful, no parameter */
   struct stat statbuf_parent;
   if(stat(parent, &statbuf_parent) != 0)                                                            /* error, assume mounted */
     return 1;
-  
-  return (statbuf_path.st_dev != statbuf_parent.st_dev) 
+
+  return (statbuf_path.st_dev != statbuf_parent.st_dev)
        ||(statbuf_path.st_ino == statbuf_parent.st_ino);
 }
 
 int samefile_c(char *path1, char *path2) {
   struct stat statbuf1;
-  if(stat(path1, &statbuf1) != 0)                                                                     /* error */
+  if(stat(path1, &statbuf1) != 0)                                                                   /* error */
     return -1;
   struct stat statbuf2;
-  if(stat(path2, &statbuf2) != 0)                                                                     /* error */
+  if(stat(path2, &statbuf2) != 0)                                                                   /* error */
     return -1;
   return statbuf1.st_dev == statbuf2.st_dev && statbuf1.st_ino == statbuf2.st_ino;
 }

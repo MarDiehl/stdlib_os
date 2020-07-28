@@ -1,8 +1,8 @@
 module stdlib
-  
+
   use os
   use os_path
-  
+
   implicit none
 
   private
@@ -16,7 +16,7 @@ module stdlib
   interface stdlib_os_getcwd
     module procedure getcwd
   end interface stdlib_os_getcwd
-  
+
   interface stdlib_os_mkdir
     module procedure mkdir
   end interface stdlib_os_mkdir
@@ -85,23 +85,23 @@ module stdlib
   interface stdlib_os_path_getsize
     module procedure getsize
   end interface stdlib_os_path_getsize
-  
+
   interface stdlib_os_path_isabs
     module procedure isabs
   end interface stdlib_os_path_isabs
-  
+
   interface stdlib_os_path_isdir
     module procedure isdir
   end interface stdlib_os_path_isdir
-  
+
   interface stdlib_os_path_isfile
     module procedure isfile
   end interface stdlib_os_path_isfile
-  
+
   interface stdlib_os_path_islink
     module procedure islink
   end interface stdlib_os_path_islink
-  
+
   interface stdlib_os_path_ismount
     module procedure ismount
   end interface stdlib_os_path_ismount
@@ -117,11 +117,11 @@ module stdlib
   !  samefile
 
   public :: &
-    stdlib_os_chdir, &    
+    stdlib_os_chdir, &
     stdlib_os_getcwd, &
-    stdlib_os_mkdir, &    
-    stdlib_os_rename, &    
-    stdlib_os_rmdir, &    
+    stdlib_os_mkdir, &
+    stdlib_os_rename, &
+    stdlib_os_rmdir, &
     stdlib_os_unlink, &
     stdlib_os_path_abspath, &
     stdlib_os_path_basename, &

@@ -231,7 +231,7 @@ module os_path
                                               &'1234567890'&
                                               &'{}'&
                                               &'_'
-    character(len=maxPathLen)     :: path_new, var_value
+    character(len=4096)         :: path_new, var_value
     character(len=:), allocatable :: var_name
     integer :: i,j,s,e
 
@@ -431,34 +431,34 @@ module os_path
 
     character(len=*), intent(in)  :: path
     character(len=:), allocatable :: normpath
-    
+
     integer :: i
 
     if(len_trim(path) == 0) then
       normpath = curdir
     else
       normpath = clean(path)
-      do 
+      do
         normpath = clean(normpath)
         i = index(normpath,sep//curdir//curdir)
         if(i==0 .or. verify(normpath(:i-1),sep//curdir)==0) exit
         normpath = normpath(:index(normpath(:i-1),sep,back=.true.))//normpath(min(i+4,len(normpath)):)
       enddo
     endif
-    
+
   end function normpath
 
   ! realpath
 
   function relpath(path,start)
-    
+
     character(len=*), intent(in)           :: path
     character(len=*), intent(in), optional :: start
     character(len=:), allocatable          :: relpath
-    
+
     character(len=:), allocatable :: common_, path_, start_
-    integer :: l_common, l_path, l_start, i, j
-   
+    integer :: l_common, l_path, i, j
+
     if(isabs(path)) then
       path_ = normpath(path)
     else
@@ -475,8 +475,7 @@ module os_path
         start_ = normpath(join(getcwd(),start))
       endif
     endif
-    l_start = len(start_)
-  
+
     common_ = commonpath(start_,path_)
     l_common = len(common_)
 
@@ -484,24 +483,24 @@ module os_path
       relpath = ''
     else
       if(common_ == sep) then
-        relpath = path_(l_common+1:) 
+        relpath = path_(l_common+1:)
       else
         relpath = path_(l_common+2:)
       endif
-    endif 
-    
+    endif
+
     if(start_ /= common_) then
       j = 0
       do i = l_common, len(start_(l_common:))
-        if(start_(i:i) == sep) j = j+1 
+        if(start_(i:i) == sep) j = j+1
       enddo
       relpath = repeat(curdir//curdir//sep,j)//relpath
-    endif 
+    endif
 
     relpath = normpath(relpath)
 
   end function relpath
- 
+
 
   function samefile(path1,path2)
 
@@ -516,9 +515,9 @@ module os_path
     samefile = return_value > 0
 
   end function samefile
-  
+
   ! split
-  
+
   ! splitdrive
 
   ! splitext
@@ -536,10 +535,10 @@ module os_path
 
 
   pure function clean_lead(p) result(p_)
-    
+
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
-    
+
     p_ = trim(p)
     do while (index(p_,sep//curdir//curdir) == 1)
        if(len(p_)>3) then
@@ -547,12 +546,12 @@ module os_path
        else
          p_ = sep
        endif
-    enddo 
-  
+    enddo
+
   end function clean_lead
-  
+
   pure function clean_trail(p) result(p_)
-    
+
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
 
@@ -563,40 +562,41 @@ module os_path
     endif
 
     if(len_trim(p_)>1) then
-      if(p_(len_trim(p_):len_trim(p_)) == sep)    p_ = p_(:len_trim(p_)-1)
+      if(p_(len_trim(p_):len_trim(p_)) == sep) p_ = p_(:len_trim(p_)-1)
     endif
-  
+
   end function clean_trail
 
 
   pure function remove_curdir(p) result(p_)
-    
+
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
-    
+
     integer :: i
-    
+
     p_ = trim(p)
     do i = len(p_),3,-1
       if (p_(i-2:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//'  '
     enddo
     p_ = trim(p_)
-  
+
   end function remove_curdir
 
   pure function remove_sep(p) result(p_)
-    
+
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
-    
+
     integer :: i
-    
+
     p_ = trim(p)
     do i = len(p_),2,-1
       if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
     enddo
     p_ = trim(p_)
-  
+
   end function remove_sep
+
 
 end module os_path
