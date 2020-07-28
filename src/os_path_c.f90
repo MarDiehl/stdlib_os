@@ -1,7 +1,7 @@
 module os_path_c
 
   implicit none
-  
+
   public
 
   interface
@@ -47,7 +47,7 @@ module os_path_c
       integer(C_INT) :: islink_c
       character(kind=C_CHAR), dimension(*), intent(in) :: path
     end function islink_c
-    
+
     function ismount_c(path) bind(C)
       use, intrinsic :: ISO_C_Binding
       integer(C_INT) :: ismount_c
