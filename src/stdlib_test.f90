@@ -10,15 +10,32 @@ program stdlib_test
   print*, "ismount('/home'): ", stdlib_os_path_ismount('/home') 
   print*, ''
 
-  open(newunit=unit, file='test.txt', action='write')
-  write(unit,*) 'test'
+  open(newunit=unit, file='test.py', action='write', status='new')
+  write(unit,'(a)') "import time;time.sleep(1);print(' hello Mio')"
   close(unit)
+  print*, "getatime('test.py'): ", stdlib_os_path_getatime('test.py') 
+  print*, "getctime('test.py'): ", stdlib_os_path_getctime('test.py') 
+  print*, "getmtime('test.py'): ", stdlib_os_path_getmtime('test.py') 
+  call execute_command_line('python3 test.py')
+  open(newunit=unit, file='test.py', action='write', status='old', position='append')
+  write(unit,'(a)') "print('hello')"
+  close(unit)
+  call stdlib_os_rename('test.py','test.txt')
+  print*, ''
+
   print*, "exists('test.txt'): ",   stdlib_os_path_exists('test.txt') 
   print*, "isdir('test.txt'): ",    stdlib_os_path_isdir('test.txt') 
   print*, "isfile('test.txt'): ",   stdlib_os_path_isfile('test.txt') 
   print*, "islink('test.txt'): ",   stdlib_os_path_islink('test.txt') 
   print*, "ismount('test.txt'): ",  stdlib_os_path_ismount('test.txt') 
   print*, "getsize('test.txt'): ",  stdlib_os_path_getsize('test.txt') 
+  print*, "getatime('test.txt'): ", stdlib_os_path_getatime('test.txt') 
+  print*, "getctime('test.txt'): ", stdlib_os_path_getctime('test.txt') 
+  print*, "getmtime('test.txt'): ", stdlib_os_path_getmtime('test.txt') 
+  call stdlib_os_rename('test.txt','test2.txt')
+  print*, "exists('test.txt'): ",   stdlib_os_path_exists('test.txt') 
+  print*, "exists('test2.txt'): ",  stdlib_os_path_exists('test2.txt') 
+  call stdlib_os_rename('test2.txt','test.txt')
   print*, ''
   
   call stdlib_os_symlink('test.txt','test.lnk')
@@ -28,6 +45,12 @@ program stdlib_test
   print*, "islink('test.lnk'): ",   stdlib_os_path_islink('test.lnk') 
   print*, "ismount('test.lnk'): ",  stdlib_os_path_ismount('test.lnk') 
   print*, "getsize('test.lnk'): ",  stdlib_os_path_getsize('test.lnk') 
+  print*, "getatime('test.lnk'): ", stdlib_os_path_getatime('test.lnk') 
+  print*, "getctime('test.lnk'): ", stdlib_os_path_getctime('test.lnk') 
+  print*, "getmtime('test.lnk'): ", stdlib_os_path_getmtime('test.lnk') 
+  call stdlib_os_unlink('test.lnk')
+  print*, "exists('test.lnk'): ",   stdlib_os_path_exists('test.lnk') 
+  call stdlib_os_unlink('test.txt')
   print*, ''
 
   call stdlib_os_mkdir('test_sym')
