@@ -1,6 +1,6 @@
 # stdlib-os
 
-Fortran version of python's os module (selecte routines only)
+Fortran version of python's os module (selected routines only)
 
 ## Getting started
 

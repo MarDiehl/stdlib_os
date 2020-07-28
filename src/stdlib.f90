@@ -109,16 +109,35 @@ module stdlib
   interface stdlib_os_path_ismount
     module procedure ismount
   end interface stdlib_os_path_ismount
-  !  join, &
+  
+  interface stdlib_os_path_join
+    module procedure join1
+    module procedure join2
+    module procedure join3
+    module procedure join4
+    module procedure join5
+  end interface stdlib_os_path_join
   !  normcase, &
   interface stdlib_os_path_normpath
     module procedure normpath
   end interface stdlib_os_path_normpath
-  !  samefile
+
   interface stdlib_os_path_relpath
     module procedure relpath
   end interface stdlib_os_path_relpath
-  !  samefile
+
+  interface stdlib_os_path_samefile
+    module procedure samefile
+  end interface stdlib_os_path_samefile
+
+  interface stdlib_os_path_split
+    module procedure split
+  end interface stdlib_os_path_split
+
+  interface stdlib_os_path_splitext
+    module procedure splitext
+  end interface stdlib_os_path_splitext
+
 
   public :: &
     stdlib_os_chdir, &
@@ -145,10 +164,12 @@ module stdlib
     stdlib_os_path_isfile, &
     stdlib_os_path_islink, &
     stdlib_os_path_ismount, &
-    !stdlib_os_path_join, &
+    stdlib_os_path_join, &
     !stdlib_os_path_normcase, &
     stdlib_os_path_normpath, &
-    !stdlib_os_path_samefile
-    stdlib_os_path_relpath
+    stdlib_os_path_samefile, &
+    stdlib_os_path_relpath, &
+    stdlib_os_path_split, &
+    stdlib_os_path_splitext
 
 end module stdlib

@@ -30,7 +30,9 @@ module os_path
     normcase, &
     normpath, &
     samefile, &
-    relpath
+    relpath, &
+    split, &
+    splitext
 
   public :: &
     commonpath1, &
@@ -554,7 +556,16 @@ module os_path
     character(len=:), allocatable, dimension(:) :: split
     integer :: s
 
+    ! ToDo: //////
+    ! ToDo: use basename/dirname
     s = scan(path,sep,back=.True.)
+    if(s>1) then
+      head = path(:s)
+      tail = path(s+1:) ! ???
+    else
+      head = path
+      tail = ''
+    endif
 
     allocate(character(len=max(len(head),len(tail)))::split(2))
     split(1) = head

@@ -3,7 +3,23 @@ program stdlib_test
 
   implicit none
   integer :: unit
+  
+  character(len=:), allocatable, dimension(:) :: split
 
+  split=stdlib_os_path_split('aaa/bbb/')
+  print*, '#'//trim(split(1))//'#'
+  print*, '#'//trim(split(2))//'#'
+  split=stdlib_os_path_split('aaa/bbb')
+  print*, '#'//trim(split(1))//'#'
+  print*, '#'//trim(split(2))//'#'
+  split=stdlib_os_path_split('/aaa/bbb')
+  print*, '#'//trim(split(1))//'#'
+  print*, '#'//trim(split(2))//'#'
+  split=stdlib_os_path_split('//')
+  print*, '#'//trim(split(1))//'#'
+  print*, '#'//trim(split(2))//'#'
+  
+  
   print*, 'current working directory: ',stdlib_os_getcwd()
   print*, 'home directory: ',stdlib_os_path_expanduser('~')
   print*, '$SHELL: ', stdlib_os_path_expandvars('$SHELL')
