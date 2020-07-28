@@ -29,6 +29,10 @@ module stdlib
     module procedure rmdir
   end interface stdlib_os_rmdir
 
+  interface stdlib_os_symlink
+    module procedure symlink
+  end interface stdlib_os_symlink
+
   interface stdlib_os_unlink
     module procedure unlink
   end interface stdlib_os_unlink
@@ -122,6 +126,7 @@ module stdlib
     stdlib_os_mkdir, &
     stdlib_os_rename, &
     stdlib_os_rmdir, &
+    stdlib_os_symlink, &
     stdlib_os_unlink, &
     stdlib_os_path_abspath, &
     stdlib_os_path_basename, &

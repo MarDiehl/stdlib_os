@@ -2,10 +2,51 @@ program stdlib_test
   use stdlib
 
   implicit none
+  integer :: unit
 
   print*, 'current working directory: ',stdlib_os_getcwd()
   print*, 'home directory: ',stdlib_os_path_expanduser('~')
   print*, '$SHELL: ', stdlib_os_path_expandvars('$SHELL')
+  print*, "ismount('/home'): ", stdlib_os_path_ismount('/home') 
+  print*, ''
+
+  open(newunit=unit, file='test.txt', action='write')
+  write(unit,*) 'test'
+  close(unit)
+  print*, "exists('test.txt'): ",   stdlib_os_path_exists('test.txt') 
+  print*, "isdir('test.txt'): ",    stdlib_os_path_isdir('test.txt') 
+  print*, "isfile('test.txt'): ",   stdlib_os_path_isfile('test.txt') 
+  print*, "islink('test.txt'): ",   stdlib_os_path_islink('test.txt') 
+  print*, "ismount('test.txt'): ",  stdlib_os_path_ismount('test.txt') 
+  print*, "getsize('test.txt'): ",  stdlib_os_path_getsize('test.txt') 
+  print*, ''
+  
+  call stdlib_os_symlink('test.txt','test.lnk')
+  print*, "exists('test.lnk'): ",   stdlib_os_path_exists('test.lnk') 
+  print*, "isdir('test.lnk'): ",    stdlib_os_path_isdir('test.lnk') 
+  print*, "isfile('test.lnk'): ",   stdlib_os_path_isfile('test.lnk') 
+  print*, "islink('test.lnk'): ",   stdlib_os_path_islink('test.lnk') 
+  print*, "ismount('test.lnk'): ",  stdlib_os_path_ismount('test.lnk') 
+  print*, "getsize('test.lnk'): ",  stdlib_os_path_getsize('test.lnk') 
+  print*, ''
+
+  call stdlib_os_mkdir('test_sym')
+  print*, "exists('test_sym'): ",   stdlib_os_path_exists('test_sym') 
+  print*, "isdir('test_sym'): ",    stdlib_os_path_isdir('test_sym') 
+  print*, "isfile('test_sym'): ",   stdlib_os_path_isfile('test_sym') 
+  print*, "islink('test_sym'): ",   stdlib_os_path_islink('test_sym') 
+  print*, "ismount('test_sym'): ",  stdlib_os_path_ismount('test_sym') 
+  print*, "getsize('test_sym'): ",  stdlib_os_path_getsize('test_sym') 
+  print*, ''
+
+  call stdlib_os_symlink('test_sym','test2_sym')
+  print*, "exists('test2_sym'): ",  stdlib_os_path_exists('test2_sym') 
+  print*, "isdir('test2_sym'): ",   stdlib_os_path_isdir('test2_sym') 
+  print*, "isfile('test2_sym'): ",  stdlib_os_path_isfile('test2_sym') 
+  print*, "islink('test2_sym'): ",  stdlib_os_path_islink('test2_sym') 
+  print*, "ismount('test2_sym'): ", stdlib_os_path_ismount('test2_sym') 
+  print*, "getsize('test2_sym'): ", stdlib_os_path_getsize('test2_sym') 
+  print*, ''
 
   ! start in defined situation
   call stdlib_os_chdir('/home')

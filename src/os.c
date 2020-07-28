@@ -32,6 +32,10 @@ int rmdir_c(const char *path){
   return rmdir(path);
 }
 
+int symlink_c(const char *src, const char *dst){
+  return symlink(src,dst);
+}
+
 int unlink_c(const char *path){
   return unlink(path);
 }

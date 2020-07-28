@@ -15,6 +15,7 @@ module os
     mkdir, &
     rename, &
     rmdir, &
+    symlink, &
     unlink
 
   contains
@@ -87,7 +88,16 @@ module os
 
   end subroutine rmdir
 
-  ! os.symlink
+  
+  subroutine symlink(src,dst)
+
+    character(len=*), intent(in) :: src,dst
+
+    if(symlink_c(f_c_string(src),f_c_string(dst)) /= 0_C_INT) &
+      error stop 'symlink: cannot create symbolic link'
+
+  end subroutine symlink
+
 
   subroutine unlink(path)
 

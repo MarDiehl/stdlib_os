@@ -36,8 +36,14 @@ module os_c
       integer(C_INT) :: rmdir_c
       character(kind=C_CHAR), dimension(*), intent(in) :: path
     end function rmdir_c
+    
+    function symlink_c(src,dst) bind(C)
+      use, intrinsic :: ISO_C_Binding
+      integer(C_INT) :: symlink_c
+      character(kind=C_CHAR), dimension(*), intent(in) :: src,dst
+    end function symlink_c
 
-   function unlink_c(path) bind(C)
+    function unlink_c(path) bind(C)
       use, intrinsic :: ISO_C_Binding
       integer(C_INT) :: unlink_c
       character(kind=C_CHAR), dimension(*), intent(in) :: path
