@@ -1,215 +1,181 @@
 program stdlib_test
-  use stdlib
+
+  use os
+  use os_path
 
   implicit none
   integer :: unit
-  
-  character(len=:), allocatable, dimension(:) :: split
 
-  split=stdlib_os_path_split('aaa/bbb/')
-  print*, '#'//trim(split(1))//'#'
-  print*, '#'//trim(split(2))//'#'
-  split=stdlib_os_path_split('aaa/bbb')
-  print*, '#'//trim(split(1))//'#'
-  print*, '#'//trim(split(2))//'#'
-  split=stdlib_os_path_split('/aaa/bbb')
-  print*, '#'//trim(split(1))//'#'
-  print*, '#'//trim(split(2))//'#'
-  split=stdlib_os_path_split('//')
-  print*, '#'//trim(split(1))//'#'
-  print*, '#'//trim(split(2))//'#'
-  
-  
-  print*, 'current working directory: ',stdlib_os_getcwd()
-  print*, 'home directory: ',stdlib_os_path_expanduser('~')
-  print*, '$SHELL: ', stdlib_os_path_expandvars('$SHELL')
-  print*, "ismount('/home'): ", stdlib_os_path_ismount('/home') 
+  character(len=:), allocatable, dimension(:) :: split_str
+
+  split_str=split('aaa/bbb/')
+  print*, '#'//trim(split_str(1))//'#'
+  print*, '#'//trim(split_str(2))//'#'
+  split_str=split('aaa/bbb')
+  print*, '#'//trim(split_str(1))//'#'
+  print*, '#'//trim(split_str(2))//'#'
+  split_str=split('/aaa/bbb')
+  print*, '#'//trim(split_str(1))//'#'
+  print*, '#'//trim(split_str(2))//'#'
+  split_str=split('//')
+  print*, '#'//trim(split_str(1))//'#'
+  print*, '#'//trim(split_str(2))//'#'
+
+
+  print*, 'current working directory: ',getcwd()
+  print*, 'home directory: ',expanduser('~')
+  print*, '$SHELL: ', expandvars('$SHELL')
+  print*, "ismount('/home'): ", ismount('/home')
   print*, ''
 
   open(newunit=unit, file='test.py', action='write', status='new')
   write(unit,'(a)') "import time;time.sleep(1);print(' hello Mio')"
   close(unit)
-  print*, "getatime('test.py'): ", stdlib_os_path_getatime('test.py') 
-  print*, "getctime('test.py'): ", stdlib_os_path_getctime('test.py') 
-  print*, "getmtime('test.py'): ", stdlib_os_path_getmtime('test.py') 
+  print*, "getatime('test.py'): ", getatime('test.py')
+  print*, "getctime('test.py'): ", getctime('test.py')
+  print*, "getmtime('test.py'): ", getmtime('test.py')
   call execute_command_line('python3 test.py')
   open(newunit=unit, file='test.py', action='write', status='old', position='append')
   write(unit,'(a)') "print('hello')"
   close(unit)
-  call stdlib_os_rename('test.py','test.txt')
+  call rename('test.py','test.txt')
   print*, ''
 
-  print*, "exists('test.txt'): ",   stdlib_os_path_exists('test.txt') 
-  print*, "isdir('test.txt'): ",    stdlib_os_path_isdir('test.txt') 
-  print*, "isfile('test.txt'): ",   stdlib_os_path_isfile('test.txt') 
-  print*, "islink('test.txt'): ",   stdlib_os_path_islink('test.txt') 
-  print*, "ismount('test.txt'): ",  stdlib_os_path_ismount('test.txt') 
-  print*, "getsize('test.txt'): ",  stdlib_os_path_getsize('test.txt') 
-  print*, "getatime('test.txt'): ", stdlib_os_path_getatime('test.txt') 
-  print*, "getctime('test.txt'): ", stdlib_os_path_getctime('test.txt') 
-  print*, "getmtime('test.txt'): ", stdlib_os_path_getmtime('test.txt') 
-  call stdlib_os_rename('test.txt','test2.txt')
-  print*, "exists('test.txt'): ",   stdlib_os_path_exists('test.txt') 
-  print*, "exists('test2.txt'): ",  stdlib_os_path_exists('test2.txt') 
-  call stdlib_os_rename('test2.txt','test.txt')
-  print*, ''
-  
-  call stdlib_os_symlink('test.txt','test.lnk')
-  print*, "exists('test.lnk'): ",   stdlib_os_path_exists('test.lnk') 
-  print*, "isdir('test.lnk'): ",    stdlib_os_path_isdir('test.lnk') 
-  print*, "isfile('test.lnk'): ",   stdlib_os_path_isfile('test.lnk') 
-  print*, "islink('test.lnk'): ",   stdlib_os_path_islink('test.lnk') 
-  print*, "ismount('test.lnk'): ",  stdlib_os_path_ismount('test.lnk') 
-  print*, "getsize('test.lnk'): ",  stdlib_os_path_getsize('test.lnk') 
-  print*, "getatime('test.lnk'): ", stdlib_os_path_getatime('test.lnk') 
-  print*, "getctime('test.lnk'): ", stdlib_os_path_getctime('test.lnk') 
-  print*, "getmtime('test.lnk'): ", stdlib_os_path_getmtime('test.lnk') 
-  call stdlib_os_unlink('test.lnk')
-  print*, "exists('test.lnk'): ",   stdlib_os_path_exists('test.lnk') 
-  call stdlib_os_unlink('test.txt')
+  print*, "exists('test.txt'): ",   exists('test.txt')
+  print*, "isdir('test.txt'): ",    isdir('test.txt')
+  print*, "isfile('test.txt'): ",   isfile('test.txt')
+  print*, "islink('test.txt'): ",   islink('test.txt')
+  print*, "ismount('test.txt'): ",  ismount('test.txt')
+  print*, "getsize('test.txt'): ",  getsize('test.txt')
+  print*, "getatime('test.txt'): ", getatime('test.txt')
+  print*, "getctime('test.txt'): ", getctime('test.txt')
+  print*, "getmtime('test.txt'): ", getmtime('test.txt')
+  call rename('test.txt','test2.txt')
+  print*, "exists('test.txt'): ",   exists('test.txt')
+  print*, "exists('test2.txt'): ",  exists('test2.txt')
+  call rename('test2.txt','test.txt')
   print*, ''
 
-  call stdlib_os_mkdir('test_sym')
-  print*, "exists('test_sym'): ",   stdlib_os_path_exists('test_sym') 
-  print*, "isdir('test_sym'): ",    stdlib_os_path_isdir('test_sym') 
-  print*, "isfile('test_sym'): ",   stdlib_os_path_isfile('test_sym') 
-  print*, "islink('test_sym'): ",   stdlib_os_path_islink('test_sym') 
-  print*, "ismount('test_sym'): ",  stdlib_os_path_ismount('test_sym') 
-  print*, "getsize('test_sym'): ",  stdlib_os_path_getsize('test_sym') 
+  call symlink('test.txt','test.lnk')
+  print*, "exists('test.lnk'): ",   exists('test.lnk')
+  print*, "isdir('test.lnk'): ",    isdir('test.lnk')
+  print*, "isfile('test.lnk'): ",   isfile('test.lnk')
+  print*, "islink('test.lnk'): ",   islink('test.lnk')
+  print*, "ismount('test.lnk'): ",  ismount('test.lnk')
+  print*, "getsize('test.lnk'): ",  getsize('test.lnk')
+  print*, "getatime('test.lnk'): ", getatime('test.lnk')
+  print*, "getctime('test.lnk'): ", getctime('test.lnk')
+  print*, "getmtime('test.lnk'): ", getmtime('test.lnk')
+  call unlink('test.lnk')
+  print*, "exists('test.lnk'): ",   exists('test.lnk')
+  call unlink('test.txt')
   print*, ''
 
-  call stdlib_os_symlink('test_sym','test2_sym')
-  print*, "exists('test2_sym'): ",  stdlib_os_path_exists('test2_sym') 
-  print*, "isdir('test2_sym'): ",   stdlib_os_path_isdir('test2_sym') 
-  print*, "isfile('test2_sym'): ",  stdlib_os_path_isfile('test2_sym') 
-  print*, "islink('test2_sym'): ",  stdlib_os_path_islink('test2_sym') 
-  print*, "ismount('test2_sym'): ", stdlib_os_path_ismount('test2_sym') 
-  print*, "getsize('test2_sym'): ", stdlib_os_path_getsize('test2_sym') 
+  call mkdir('test_sym')
+  print*, "exists('test_sym'): ",   exists('test_sym')
+  print*, "isdir('test_sym'): ",    isdir('test_sym')
+  print*, "isfile('test_sym'): ",   isfile('test_sym')
+  print*, "islink('test_sym'): ",   islink('test_sym')
+  print*, "ismount('test_sym'): ",  ismount('test_sym')
+  print*, "getsize('test_sym'): ",  getsize('test_sym')
+  print*, ''
+
+  call symlink('test_sym','test2_sym')
+  print*, "exists('test2_sym'): ",  exists('test2_sym')
+  print*, "isdir('test2_sym'): ",   isdir('test2_sym')
+  print*, "isfile('test2_sym'): ",  isfile('test2_sym')
+  print*, "islink('test2_sym'): ",  islink('test2_sym')
+  print*, "ismount('test2_sym'): ", ismount('test2_sym')
+  print*, "getsize('test2_sym'): ", getsize('test2_sym')
   print*, ''
 
   ! start in defined situation
-  call stdlib_os_chdir('/home')
-  if(.not. stdlib_os_path_isdir('/bin')) &
+  call chdir('/home')
+  if(.not. isdir('/bin')) &
     error stop "'/bin' does not exist"
 
-
   ! basename
-  if(stdlib_os_path_basename('/../') /= '') &
+  if(basename('/../') /= '') &
     error stop "basename('/../') /= ''"
-
-  if(stdlib_os_path_basename('/aa/bb/') /= '') &
+  if(basename('/aa/bb/') /= '') &
     error stop "basename('/aa/bb/') /= ''"
-
-  if(stdlib_os_path_basename('/aa/bb/c') /= 'c') &
+  if(basename('/aa/bb/c') /= 'c') &
     error stop "basename('/aa/bb/c') /= 'c'"
 
-
   ! dirname
-  if(stdlib_os_path_dirname('xxx') /= '') &
+  if(dirname('xxx') /= '') &
     error stop "dirname('xxx') /= ''"
-
-  if(stdlib_os_path_dirname('/xxx') /= '/') &
+  if(dirname('/xxx') /= '/') &
     error stop "dirname('/xxx') /= '/'"
-
-  if(stdlib_os_path_dirname('/') /= '/') &
+  if(dirname('/') /= '/') &
     error stop "dirname('/') /= '/'"
-
-  if(stdlib_os_path_dirname('//') /= '//') &
+  if(dirname('//') /= '//') &
     error stop "dirname('//') /= '//'"
-
-  if(stdlib_os_path_dirname('/../') /= '/..') &
+  if(dirname('/../') /= '/..') &
     error stop "dirname('/../') /= '/..'"
 
-
   ! getcwd
-  if(stdlib_os_getcwd() /= '/home') &
+  if(getcwd() /= '/home') &
     error stop "getcwd() /= '/home'"
 
-
   ! commonpath
-  if(stdlib_os_path_commonpath('yy','xxx/yyy') /= '') &
+  if(commonpath('yy','xxx/yyy') /= '') &
     error stop "commonpath('yy','xxx/yyy') /= ''"
-
-  if(stdlib_os_path_commonpath('yyy/.','yyy') /= 'yyy') &
+  if(commonpath('yyy/.','yyy') /= 'yyy') &
     error stop "commonpath('yyy/.','yyy') /= 'yyy'"
-
-  if(stdlib_os_path_commonpath('yyy/','yyy') /= 'yyy') &
+  if(commonpath('yyy/','yyy') /= 'yyy') &
     error stop "commonpath('yyy/','yyy') /= 'yyy'"
-
-  if(stdlib_os_path_commonpath('yyy','yyy') /= 'yyy') &
+  if(commonpath('yyy','yyy') /= 'yyy') &
     error stop "commonpath('yyy','yyy') /= 'yyy'"
-
-  if(stdlib_os_path_commonpath('yyy.','yyy') /= '') &
+  if(commonpath('yyy.','yyy') /= '') &
     error stop "commonpath('yyy/.','yyy') /= ''"
-
-  if(stdlib_os_path_commonpath('../../src','../../src') /= '../../src') &
+  if(commonpath('../../src','../../src') /= '../../src') &
     error stop "commonpath('../../src','../../src') /= '../../src'"
-
-  if(stdlib_os_path_commonpath('../src/..','../src/..') /= '../src/..') &
+  if(commonpath('../src/..','../src/..') /= '../src/..') &
     error stop "commonpath('../src/..','../src/..') /= '../src/..'"
-
-  if(stdlib_os_path_commonpath('/./yyy/./.','/./yyy/./.') /= '/yyy') &
+  if(commonpath('/./yyy/./.','/./yyy/./.') /= '/yyy') &
     error stop "commonpath('/./yyy/./.','/./yyy/./.') /= '/yyy'"
-
-  if(stdlib_os_path_commonpath('/bin','/') /= '/') &
+  if(commonpath('/bin','/') /= '/') &
     error stop "commonpath('/bin','/') /= '/'"
 
-
   ! normpath
-  if(stdlib_os_path_normpath('../../aa') /= '../../aa') &
+  if(normpath('../../aa') /= '../../aa') &
     error stop "normpath('../../aa') /= '../../aa'"
-
-  if(stdlib_os_path_normpath('aa/../../bbb') /= '../bbb') &
+  if(normpath('aa/../../bbb') /= '../bbb') &
     error stop "normpath('aa/../../bbb') /= '../bbb'"
-
-  if(stdlib_os_path_normpath('/..') /= '/') &
+  if(normpath('/..') /= '/') &
     error stop "normpath('/..') /= '/'"
-
-  if(stdlib_os_path_normpath('aa/../') /= '.') &
+  if(normpath('aa/../') /= '.') &
     error stop "normpath('aa/../') /= '.'"
-
-  if(stdlib_os_path_normpath('..') /= '..') &
+  if(normpath('..') /= '..') &
     error stop "path_normpath('..') /= '..'"
-
-  if(stdlib_os_path_normpath('') /= '.') &
+  if(normpath('') /= '.') &
     error stop "path_normpath('') /= '.'"
-
-  if(stdlib_os_path_normpath('/aa/bb/../../../') /= '/') &
+  if(normpath('/aa/bb/../../../') /= '/') &
     error stop "normpath('/aa/bb/../../../') /= '/'"
-
-  if(stdlib_os_path_normpath('/aa/bb/../../../xx/') /= '/xx') &
+  if(normpath('/aa/bb/../../../xx/') /= '/xx') &
     error stop "normpath('/aa/bb/../../../xx/') /= '/xx'"
-
-  if(stdlib_os_path_normpath('/aa/bb/../../../xx') /= '/xx') &
+  if(normpath('/aa/bb/../../../xx') /= '/xx') &
     error stop "normpath('/aa/bb/../../../xx/') /= '/xx'"
-
-  if(stdlib_os_path_normpath('.') /= '.') &
+  if(normpath('.') /= '.') &
     error stop "normpath('.') /= '.'"
-
-  if(stdlib_os_path_normpath('../..') /= '../..') &
+  if(normpath('../..') /= '../..') &
     error stop "normpath('../..') /= '../..'"
-
-  if(stdlib_os_path_normpath('/../..') /= '/') &
+  if(normpath('/../..') /= '/') &
     error stop "normpath('../..') /= '/'"
-
-  if(stdlib_os_path_normpath('/aaa/bbb/ccc/ddd/../uuu') /= '/aaa/bbb/ccc/uuu') &
+  if(normpath('/aaa/bbb/ccc/ddd/../uuu') /= '/aaa/bbb/ccc/uuu') &
     error stop "norpath('/aaa/bbb/ccc/ddd/../uuu') /= '/aaa/bbb/ccc/uuu'"
 
-
   ! relpath
-  if(stdlib_os_path_relpath('/home','/home') /= '.') &
+  if(relpath('/home','/home') /= '.') &
     error stop "relpath('/home','/home') /= '.'"
-
-  if(stdlib_os_path_relpath('.') /= '.') &
+  if(relpath('.') /= '.') &
     error stop "relpath('.') /= '.'"
-
-  if(stdlib_os_path_relpath('aaa/bbb') /= 'aaa/bbb') &
+  if(relpath('aaa/bbb') /= 'aaa/bbb') &
     error stop "relpath('aaa/bbb') /= 'aaa/bbb'"
-
-  if(stdlib_os_path_relpath('/bin') /= '../bin') &
+  if(relpath('/bin') /= '../bin') &
     error stop "relpath('/bin') /= '../bin'"
-
-  if(stdlib_os_path_relpath('/bin','/') /= 'bin') &
+  if(relpath('/bin','/') /= 'bin') &
     error stop "relpath('/bin','/') /= 'bin'"
 
 
