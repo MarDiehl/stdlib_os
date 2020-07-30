@@ -18,8 +18,8 @@ module os_path
     expanduser, &
     expandvars, &
     getatime, &
-    getmtime, &
     getctime, &
+    getmtime, &
     getsize, &
     isabs, &
     isdir, &
@@ -33,18 +33,6 @@ module os_path
     relpath, &
     split, &
     splitext
-
-  public :: &
-    commonpath1, &
-    commonpath2, &
-    commonpath3, &
-    commonpath4, &
-    commonpath5, &
-    join1, &
-    join2, &
-    join3, &
-    join4, &
-    join5
 
   interface commonpath
     module procedure commonpath1
@@ -251,10 +239,10 @@ module os_path
                                               &'_'
     character(len=:), allocatable :: val
     integer :: i,j,stat
-    
+
     allocate(character(len=PATH_MAX()-1)::val)
     expandvars = path
-    
+
     i=1
     do while(i< len(expandvars))
       start: if(expandvars(i:i)=='$') then
@@ -293,7 +281,7 @@ module os_path
         i = i+1
       endif start
     enddo
-  
+
   end function expandvars
 
 
@@ -572,7 +560,7 @@ module os_path
     split(2) = tail
 
   end function split
-  
+
   ! splitdrive
 
   function splitext(path)
@@ -591,7 +579,7 @@ module os_path
       root = path
       tail = ''
     endif
-    
+
     allocate(character(len=max(len(root),len(tail)))::splitext(2))
     splitext(1) = root
     splitext(2) = tail

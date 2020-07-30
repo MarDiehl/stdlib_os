@@ -49,6 +49,7 @@ module os
 
   end function getcwd
 
+  !lsdir
 
   subroutine mkdir(path,mode)
 
