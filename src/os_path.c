@@ -67,7 +67,7 @@ int ismount_c(char *path) {
   if(stat(path, &statbuf_path) != 0)                                                                /* error */
     return 0;
 
-  char parent[strlen(path)+3];
+  char parent[strlen(path)+4];
   strcpy(parent,path);
   strcat(parent,"/..");                                                                             /* Careful, no parameter */
   struct stat statbuf_parent;
