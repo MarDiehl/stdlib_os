@@ -285,50 +285,54 @@ module os_path
   end function expandvars
 
 
-  function getatime(path)
+  function getatime(path,stat)
 
-    real(C_DOUBLE)               :: getatime
-    character(len=*), intent(in) :: path
+    real(C_DOUBLE)                          :: getatime
+    character(len=*), intent(in)            :: path
+    integer, intent(out), optional :: stat
 
     getatime = getatime_c(f_c_string(path))
-    if(getatime < 0.0) &
-      error stop 'getatime: could not determine file access time'
+    
+    if(present(stat)) stat = merge(1,0, getatime < 0.0)
 
   end function getatime
 
 
-  function getctime(path)
+  function getctime(path,stat)
 
     real(C_DOUBLE)               :: getctime
     character(len=*), intent(in) :: path
+    integer, intent(out), optional :: stat
 
     getctime = getctime_c(f_c_string(path))
-    if(getctime < 0.0) &
-      error stop 'getctime: could not determine file creation time'
+    
+    if(present(stat)) stat = merge(1,0, getctime < 0.0)
 
   end function getctime
 
 
-  function getmtime(path)
+  function getmtime(path,stat)
 
     real(C_DOUBLE)               :: getmtime
     character(len=*), intent(in) :: path
+    integer, intent(out), optional :: stat
 
     getmtime = getmtime_c(f_c_string(path))
-    if(getmtime < 0.0) &
-      error stop 'getmtime: could not determine file modification time'
+    
+    if(present(stat)) stat = merge(1,0, getmtime < 0.0)
 
   end function getmtime
 
 
-  function getsize(path)
+  function getsize(path,stat)
 
     integer(C_LONG)              :: getsize
     character(len=*), intent(in) :: path
+    integer, intent(out), optional :: stat
 
     getsize = getsize_c(f_c_string(path))
-    if(getsize < 0) &
-      error stop 'getsize: could not determine file size'
+
+    if(present(stat)) stat = merge(1,0, getsize < 0)
 
   end function getsize
 
@@ -523,17 +527,17 @@ module os_path
   end function relpath
 
 
-  function samefile(path1,path2)
+  function samefile(path1,path2,stat)
 
     logical                      :: samefile
     character(len=*), intent(in) :: path1, path2
     integer(C_INT)               :: return_value
+    integer, intent(out), optional :: stat
 
     return_value = samefile_c(f_c_string(path1),f_c_string(path2))
-
-    if(return_value == -1) &
-      error stop 'samefile: cannot access file(s)'
-    samefile = return_value > 0
+    
+    if(present(stat)) stat = merge(1,0, return_value < 0)
+    samefile = return_value == 0
 
   end function samefile
 

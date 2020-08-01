@@ -22,30 +22,35 @@ module os
 
   ! os.access
 
-  subroutine chdir(path)
+  subroutine chdir(path,stat)
 
     character(len=*), intent(in) :: path
+    integer, intent(out), optional :: stat
+    
+    integer :: stat_
 
-    if(chdir_c(f_c_string(path)) /= 0_C_INT) &
-      error stop 'chdir: cannot change directory'
+    stat_ = int(chdir_c(f_c_string(path)))
+
+    if(present(stat)) stat = stat_
 
   end subroutine chdir
 
 
-  function getcwd()
+  function getcwd(stat)
 
     character(len=:), allocatable :: getcwd
 
     character(kind=C_CHAR), dimension(:), allocatable :: cwd
-    integer(C_INT)                                    :: stat
+    integer, intent(out), optional :: stat
+    integer(C_INT)                                    :: stat_
 
     allocate(cwd(PATH_MAX()))
 
-    call getcwd_c(cwd,stat)
-    if(stat /= 0) &
-      error stop 'getcwd: cannot determine current working directory'
-
+    call getcwd_c(cwd,stat_)
+    
     getcwd = c_f_string(cwd)
+    if(present(stat)) stat = stat_
+
 
   end function getcwd
 
