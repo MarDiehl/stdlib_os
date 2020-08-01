@@ -11,10 +11,11 @@
 #if !defined(__MINGW32__) && !defined(__MINGW64__)
 #define PATH_MAX _MAX_PATH
 #endif
-#define _getcwd getcwd
-#define _mkdir   mkdir
-#define _rmdir   rmdir
-#define _unlink  unlink
+#define getcwd  _getcwd
+#define chdir   _chdir
+#define mkdir   _mkdir
+#define rmdir   _rmdir
+#define unlink  _unlink
 #endif
 
 int chdir_c(const char *path){

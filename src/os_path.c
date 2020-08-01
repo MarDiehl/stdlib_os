@@ -16,6 +16,11 @@
 double st_xtime2double(struct timespec time){
   return (double)time.tv_sec+((double)time.tv_nsec)*1.e-9;
 }
+#else
+#if !( defined(__MINGW32__) || defined(__MINW64__) )
+#define S_ISREG(mode) _S_IFREG & mode
+#define S_ISDIR(mode) _S_IFDIR & mode
+#endif
 #endif
 
 double getatime_c(char *path) {
