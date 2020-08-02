@@ -289,50 +289,66 @@ module os_path
 
     real(C_DOUBLE)                          :: getatime
     character(len=*), intent(in)            :: path
-    integer, intent(out), optional :: stat
+    integer,          intent(out), optional :: stat
 
     getatime = getatime_c(f_c_string(path))
     
-    if(present(stat)) stat = merge(1,0, getatime < 0.0)
-
+    if(present(stat)) then
+      stat = merge(1,0, getatime < 0.0)
+    else
+      error stop 'getatime: could not determine file access time'
+    endif
+ 
   end function getatime
 
 
   function getctime(path,stat)
 
-    real(C_DOUBLE)               :: getctime
-    character(len=*), intent(in) :: path
-    integer, intent(out), optional :: stat
+    real(C_DOUBLE)                          :: getctime
+    character(len=*), intent(in)            :: path
+    integer,          intent(out), optional :: stat
 
     getctime = getctime_c(f_c_string(path))
     
-    if(present(stat)) stat = merge(1,0, getctime < 0.0)
+    if(present(stat)) then
+      stat = merge(1,0, getctime < 0.0)
+    else
+      error stop 'getctime: could not determine file creation time'
+    endif
 
   end function getctime
 
 
   function getmtime(path,stat)
 
-    real(C_DOUBLE)               :: getmtime
-    character(len=*), intent(in) :: path
-    integer, intent(out), optional :: stat
+    real(C_DOUBLE)                          :: getmtime
+    character(len=*), intent(in)            :: path
+    integer,          intent(out), optional :: stat
 
     getmtime = getmtime_c(f_c_string(path))
     
-    if(present(stat)) stat = merge(1,0, getmtime < 0.0)
+    if(present(stat)) then
+      stat = merge(1,0, getmtime < 0.0)
+    else
+      error stop 'getmtime: could not determine file modification time'
+    endif
 
   end function getmtime
 
 
   function getsize(path,stat)
 
-    integer(C_LONG)              :: getsize
-    character(len=*), intent(in) :: path
-    integer, intent(out), optional :: stat
+    integer(C_LONG)                         :: getsize
+    character(len=*), intent(in)            :: path
+    integer,          intent(out), optional :: stat
 
     getsize = getsize_c(f_c_string(path))
 
-    if(present(stat)) stat = merge(1,0, getsize < 0)
+    if(present(stat)) then
+      stat = merge(1,0, getsize < 0)
+    else
+      error stop 'getsize: could not determine file size'
+    endif
 
   end function getsize
 
@@ -529,22 +545,26 @@ module os_path
 
   function samefile(path1,path2,stat)
 
-    logical                      :: samefile
-    character(len=*), intent(in) :: path1, path2
-    integer(C_INT)               :: return_value
-    integer, intent(out), optional :: stat
+    logical                                 :: samefile
+    character(len=*), intent(in)            :: path1, path2
+    integer(C_INT)                          :: return_value
+    integer,          intent(out), optional :: stat
 
     return_value = samefile_c(f_c_string(path1),f_c_string(path2))
     
-    if(present(stat)) stat = merge(1,0, return_value < 0)
+    if(present(stat)) then
+      stat = merge(1,0, return_value < 0)
+    else
+      error stop 'samefile: cannot access file(s)'
+    endif
     samefile = return_value == 0
 
   end function samefile
 
   function split(path)
 
-    character(len=*), intent(in)  :: path
-    character(len=:), allocatable :: head,tail
+    character(len=*), intent(in)                :: path
+    character(len=:), allocatable               :: head,tail
     character(len=:), allocatable, dimension(:) :: split
     integer :: s
 
