@@ -33,13 +33,13 @@ void getcwd_c(char cwd[], int *stat){
   }
 }
 
-#ifndef _WIN32
+#ifndef WIN32
 int mkdir_c(const char *path, int *mode){
   return mkdir(path,(mode_t)*mode);
 }
 #else
 int mkdir_c(const char *path, int *mode){
-  return _mkdir(path);
+  return mkdir(path);
 }
 #endif
 
@@ -52,11 +52,13 @@ int rmdir_c(const char *path){
 }
 
 #ifndef _WIN32
-int symlink_c(const char *src, const char *dst){
+int symlink_c(const char *src, const char *dst, int *supported){
+  *supported = 1;
   return symlink(src,dst);
 }
 #else
-int symlink_c(const char *src, const char *dst){
+int symlink_c(const char *src, const char *dst, int *supported){
+  *supported = 0;
   return 1;
 }
 #endif

@@ -1,0 +1,4 @@
+! stdlib_os.inc: Name of the operating system
+!
+character(len=*), parameter, public :: os_name = "@CMAKE_SYSTEM_NAME@"
+integer, parameter, public          :: os_id   = OS_@CMAKE_SYSTEM_NAME@
