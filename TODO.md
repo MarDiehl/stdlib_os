@@ -13,3 +13,8 @@ The following issues need to be resolved, as of 27 september 2020:
 ## Platform-dependent issues
 On plain Windows links are not supported in the same way as under Linux or Cygwin. Therefore the subroutine `symlink`
 
+# Extensions
+
+Missing facilities:
+
+ * Currently a facility is missing to return the names of files and directories present in a given directory.

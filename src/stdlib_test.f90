@@ -208,9 +208,10 @@ program stdlib_test
     error stop "relpath('.') /= '.'"
   if(relpath('aaa/bbb') /= 'aaa/bbb') &
     error stop "relpath('aaa/bbb') /= 'aaa/bbb'"
-  !write(*,*) 'Relpath: >>', relpath('/bin'), '<<'
-  if(relpath('/bin') /= '../bin') &
-      error stop "relpath('/bin') /= '../bin'"
+  if(relpath('/aaa/bbb/ccc', '/aaa/ddd/eee') /= '../../bbb/ccc') &
+      error stop "relpath('/aaa/bbb/ccc','/aaa/bbb/ccc') /= '../../bbb/ccc'"
+  if(relpath('/bin', '/home') /= '../bin') &
+      error stop "relpath('/bin','/home') /= '../bin'"
   if(relpath('/bin','/') /= 'bin') &
     error stop "relpath('/bin','/') /= 'bin'"
 
