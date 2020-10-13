@@ -29,21 +29,19 @@ module os
 
   ! os.access
 
-  subroutine chdir(path, error)
+  subroutine chdir(path, stat)
 
     character(len=*), intent(in)   :: path
-    logical, intent(out), optional :: error
+    integer, intent(out), optional :: stat
 
-    if ( present(error) ) then
-      error = .false.
-    endif
+    integer(C_INT) :: stat_
 
-    if(chdir_c(f_c_string(path)) /= 0_C_INT) then
-      if ( present(error) ) then
-        error = .true.
-      else
-        error stop 'chdir: cannot change directory'
-      endif
+    stat_ = chdir_c(f_c_string(path))
+
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'chdir: cannot change directory'
     endif
 
   end subroutine chdir
@@ -62,8 +60,9 @@ module os
 
     ! An error condition for this function seems a very serious problem
     ! No escape possible?
+    ! MD: Ipython also crashes completely if the cwd does not exists
 
-    if(stat /= 0) &
+    if(stat /= 0_C_INT) &
       error stop 'getcwd: cannot determine current working directory'
 
     getcwd = c_f_string(cwd)
@@ -72,13 +71,13 @@ module os
 
   !lsdir
 
-  subroutine mkdir(path,mode,error)
+  subroutine mkdir(path,mode,stat)
 
     character(len=*), intent(in) :: path
-    integer,          intent(in), optional  :: mode
-    logical,          intent(out), optional :: error
+    integer,          intent(in),  optional :: mode
+    integer,          intent(out), optional :: stat
 
-    integer(C_INT) :: mode_
+    integer(C_INT) :: mode_, stat_
 
     if(present(mode)) then
       mode_ = int(mode,C_INT)
@@ -86,58 +85,48 @@ module os
       mode_ = int(O'777',C_INT)
     endif
 
-    if ( present(error) ) then
-      error = .false.
-    endif
-
-    if(mkdir_c(f_c_string(path),mode_) /= 0_C_INT) then
-      if ( present(error) ) then
-        error = .true.
-      else
-        error stop 'mkdir: cannot create directory'
-      endif
+    stat_ = mkdir_c(f_c_string(path),mode_)
+    
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'mkdir: cannot create directory'
     endif
 
   end subroutine mkdir
 
 
-  subroutine rename(src,dst,error)
+  subroutine rename(src,dst,stat)
 
     character(len=*), intent(in) :: src,dst
-    logical,          intent(out), optional :: error
+    integer,          intent(out), optional :: stat
 
-    if ( present(error) ) then
-      error = .false.
-    endif
+    integer(C_INT) :: stat_
 
-    if(rename_c(f_c_string(src),f_c_string(dst)) /= 0_C_INT) then
-      if ( present(error) ) then
-        error = .true.
-      else
-        error stop 'rename: cannot rename file/directory'
-      endif
+    stat_ = rename_c(f_c_string(src),f_c_string(dst))
+
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'rename: cannot rename file/directory'
     endif
 
   end subroutine rename
 
 
-  subroutine rmdir(path,error)
+  subroutine rmdir(path,stat)
 
     character(len=*), intent(in) :: path
-    logical,          intent(out), optional :: error
+    integer,          intent(out), optional :: stat
 
-    integer(kind=c_int) :: rc
+    integer(C_INT) :: stat_
 
-    if ( present(error) ) then
-      error = .false.
-    endif
-
-    if(rmdir_c(f_c_string(path)) /= 0_C_INT) then
-      if ( present(error) ) then
-        error = .true.
-      else
-        error stop 'rmdir: cannot remove directory'
-      endif
+    stat_ = rmdir_c(f_c_string(path))
+    
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'rmdir: cannot remove directory'
     endif
 
   end subroutine rmdir
@@ -174,17 +163,19 @@ module os
   end subroutine symlink
 
 
-  subroutine unlink(path,error)
+  subroutine unlink(path,stat)
 
     character(len=*), intent(in) :: path
-    logical,          intent(out), optional :: error
+    integer,          intent(out), optional :: stat
 
-    if(unlink_c(f_c_string(path)) /= 0_C_INT) then
-      if ( present(error) ) then
-        error = .true.
-      else
-        error stop 'unlink: cannot unlink (delete) file'
-      endif
+    integer(C_INT) :: stat_
+
+    stat_ = unlink_c(f_c_string(path))
+    
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'unlink: cannot unlink (delete) file'
     endif
 
   end subroutine unlink
