@@ -12,7 +12,7 @@ int chdir_c(const char *path){
 void getcwd_c(char cwd[], int *stat){
   char cwd_tmp[PATH_MAX];
   if(getcwd(cwd_tmp, sizeof(cwd_tmp)) != NULL){
-    strcpy(cwd,cwd_tmp);
+    strcpy(cwd,cwd_tmp); /* use strncpy or strlcpy */
     *stat = 0;
   }
   else{
