@@ -5,8 +5,16 @@ program stdlib_test
 
   implicit none
   integer :: unit
+  logical :: error
 
   character(len=:), allocatable, dimension(:) :: split_str
+  character(len=:), allocatable               :: startdir
+
+!  startdir = relpath('/bin')
+!  write(*,*) 'Relpath: >>', startdir, '<<'
+!  if(relpath('/bin') /= '../bin') &
+!      error stop "relpath('/bin') /= '../bin'"
+!  stop
 
   split_str=split('aaa/bbb/')
   print*, '#'//trim(split_str(1))//'#'
@@ -21,10 +29,12 @@ program stdlib_test
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
 
+  print*, 'name of the operating system: ', os_name
 
   print*, 'current working directory: ',getcwd()
   print*, 'home directory: ',expanduser('~')
-  print*, '$SHELL: ', expandvars('$SHELL')
+  print*, '$TMP: ', expandvars('$TMP')
+  print*, '$PATH: ', expandvars('$PATH')
   print*, "ismount('/home'): ", ismount('/home')
   print*, ''
 
@@ -34,7 +44,6 @@ program stdlib_test
   print*, "getatime('test.py'): ", getatime('test.py')
   print*, "getctime('test.py'): ", getctime('test.py')
   print*, "getmtime('test.py'): ", getmtime('test.py')
-  call execute_command_line('python3 test.py')
   open(newunit=unit, file='test.py', action='write', status='old', position='append')
   write(unit,'(a)') "print('hello')"
   close(unit)
@@ -56,19 +65,28 @@ program stdlib_test
   call rename('test2.txt','test.txt')
   print*, ''
 
-  call symlink('test.txt','test.lnk')
-  print*, "exists('test.lnk'): ",   exists('test.lnk')
-  print*, "isdir('test.lnk'): ",    isdir('test.lnk')
-  print*, "isfile('test.lnk'): ",   isfile('test.lnk')
-  print*, "islink('test.lnk'): ",   islink('test.lnk')
-  print*, "ismount('test.lnk'): ",  ismount('test.lnk')
-  print*, "getsize('test.lnk'): ",  getsize('test.lnk')
-  print*, "getatime('test.lnk'): ", getatime('test.lnk')
-  print*, "getctime('test.lnk'): ", getctime('test.lnk')
-  print*, "getmtime('test.lnk'): ", getmtime('test.lnk')
-  call unlink('test.lnk')
-  print*, "exists('test.lnk'): ",   exists('test.lnk')
-  call unlink('test.txt')
+  if ( os_id /= OS_Windows ) then
+    call symlink('test.txt','test.lnk', error)
+    if ( .not. error ) then
+      print*, "exists('test.lnk'): ",   exists('test.lnk')
+      print*, "isdir('test.lnk'): ",    isdir('test.lnk')
+      print*, "isfile('test.lnk'): ",   isfile('test.lnk')
+      print*, "islink('test.lnk'): ",   islink('test.lnk')
+      print*, "ismount('test.lnk'): ",  ismount('test.lnk')
+      print*, "getsize('test.lnk'): ",  getsize('test.lnk')
+      print*, "getatime('test.lnk'): ", getatime('test.lnk')
+      print*, "getctime('test.lnk'): ", getctime('test.lnk')
+      print*, "getmtime('test.lnk'): ", getmtime('test.lnk')
+      call unlink('test.lnk')
+      print*, "exists('test.lnk'): ",   exists('test.lnk')
+      call unlink('test.txt')
+    else
+      print*, 'Skipping "link" tests - links may not be supported on this platform'
+    endif
+  else
+    print*, 'Skipping "link" tests - links not supported on Windows'
+  endif
+
   print*, ''
 
   call mkdir('test_sym')
@@ -80,19 +98,32 @@ program stdlib_test
   print*, "getsize('test_sym'): ",  getsize('test_sym')
   print*, ''
 
-  call symlink('test_sym','test2_sym')
-  print*, "exists('test2_sym'): ",  exists('test2_sym')
-  print*, "isdir('test2_sym'): ",   isdir('test2_sym')
-  print*, "isfile('test2_sym'): ",  isfile('test2_sym')
-  print*, "islink('test2_sym'): ",  islink('test2_sym')
-  print*, "ismount('test2_sym'): ", ismount('test2_sym')
-  print*, "getsize('test2_sym'): ", getsize('test2_sym')
+  if ( os_id /= OS_Windows ) then
+    call symlink('test_sym','test2_sym')
+    if ( .not. error ) then
+      print*, "exists('test2_sym'): ",  exists('test2_sym')
+      print*, "isdir('test2_sym'): ",   isdir('test2_sym')
+      print*, "isfile('test2_sym'): ",  isfile('test2_sym')
+      print*, "islink('test2_sym'): ",  islink('test2_sym')
+      print*, "ismount('test2_sym'): ", ismount('test2_sym')
+      print*, "getsize('test2_sym'): ", getsize('test2_sym')
+    else
+      print*, 'Skipping "link" tests - links may not be supported on this platform'
+    endif
+  else
+    print*, 'Skipping "link" tests - links not supported on Windows'
+  endif
   print*, ''
 
   ! start in defined situation
-  call chdir('/home')
-  if(.not. isdir('/bin')) &
-    error stop "'/bin' does not exist"
+  startdir = getcwd()
+  if ( os_id /= OS_Windows ) then
+    call chdir('/home')
+    if(.not. isdir('/bin')) &
+      error stop "'/bin' does not exist"
+  else
+    print*,'Windows typically does not have /home and /bin directories'
+  endif
 
   ! basename
   if(basename('/../') /= '') &
@@ -115,8 +146,12 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if(getcwd() /= '/home') &
-    error stop "getcwd() /= '/home'"
+  if ( os_id /= OS_Windows ) then
+    if(getcwd() /= '/home') &
+      error stop "getcwd() /= '/home'"
+  else
+    print*,'Current working directory: ', trim(getcwd())
+  endif
 
   ! commonpath
   if(commonpath('yy','xxx/yyy') /= '') &
@@ -173,10 +208,25 @@ program stdlib_test
     error stop "relpath('.') /= '.'"
   if(relpath('aaa/bbb') /= 'aaa/bbb') &
     error stop "relpath('aaa/bbb') /= 'aaa/bbb'"
-  if(relpath('/bin') /= '../bin') &
-    error stop "relpath('/bin') /= '../bin'"
+  if(relpath('/aaa/bbb/ccc', '/aaa/ddd/eee') /= '../../bbb/ccc') &
+      error stop "relpath('/aaa/bbb/ccc','/aaa/bbb/ccc') /= '../../bbb/ccc'"
+  if(relpath('/bin', '/home') /= '../bin') &
+      error stop "relpath('/bin','/home') /= '../bin'"
   if(relpath('/bin','/') /= 'bin') &
     error stop "relpath('/bin','/') /= 'bin'"
 
+  print*,''
+  print*,'Cleaning up ...'
+  call chdir(startdir)
+  call rmdir('test_sym' )
+
+  ! Under Windows we do not have the symlink, but we do have the file 'test.txt' left
+  if ( os_id /= OS_Windows ) then
+    call unlink('test2_sym')
+  else
+    call unlink('test.txt')
+  endif
+
+  print*,'Tests completed'
 
 end program stdlib_test

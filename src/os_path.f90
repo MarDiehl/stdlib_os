@@ -342,6 +342,10 @@ module os_path
       isabs = .false.
     else
       isabs = path(1:1) == sep
+
+      if ( .not. isabs .and. os_id == OS_Windows ) then
+         isabs = path(2:3) == ':/' .or. path(2:3) == ':\'
+      endif
     endif
 
   end function isabs
@@ -512,6 +516,16 @@ module os_path
 
     if(start_ /= common_) then
       j = 0
+      l_common = max(1,l_common)
+
+      ! Take care of the drive indicator on Windows
+      if ( os_id == OS_Windows ) then
+        if(start_(2:3) == ':/' .or. start_(2:3) == ':\' ) then
+          j = 1
+          l_common = 4
+        endif
+      endif
+
       do i = l_common, len(start_(l_common:))
         if(start_(i:i) == sep) j = j+1
       enddo

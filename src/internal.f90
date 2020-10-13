@@ -10,7 +10,6 @@ module internal
 
   integer, parameter :: USER_NAME_MAX = 32
 
-
   contains
 
   pure function c_f_string(c_string) result(f_string)
