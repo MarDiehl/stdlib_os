@@ -7,6 +7,6 @@ include_directories(${CMAKE_BINARY_DIR})
 
 # create a simple include file: identify the operating system
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/stdlib_os.inc.in
-  ${CMAKE_BINARY_DIR}/stdlib_os.inc
+  ${CMAKE_CURRENT_SOURCE_DIR}/os.name.in
+  ${CMAKE_BINARY_DIR}/os.name
   )

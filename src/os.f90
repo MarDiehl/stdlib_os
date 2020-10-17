@@ -18,7 +18,7 @@ module os
     symlink, &
     unlink
 
-  include "stdlib_os.inc"
+  include "os.name"
 
   contains
 
