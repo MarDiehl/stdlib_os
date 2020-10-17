@@ -127,32 +127,19 @@ module os
   end subroutine rmdir
 
 
-  subroutine symlink(src,dst,error)
+  subroutine symlink(src,dst,stat)
 
     character(len=*), intent(in) :: src,dst
-    logical,          intent(out), optional :: error
+    integer,          intent(out), optional :: stat
 
-    integer(kind=c_int) :: rc, supported
+    integer(C_INT) :: stat_
 
+    stat_ = symlink_c(f_c_string(src),f_c_string(dst))
 
-    if ( present(error) ) then
-      error = .false.
-    endif
-
-    rc = symlink_c(f_c_string(src),f_c_string(dst), supported )
-
-    if ( rc /= 0_C_INT ) then
-      if ( supported == 1_C_INT ) then
-        if ( present(error) ) then
-          error = .true.
-        else
-          error stop 'symlink: cannot create symbolic link'
-        endif
-      else
-        if ( present(error) ) then
-          error = .true.
-        endif
-      endif
+    if (present(stat)) then
+      stat = int(stat_)
+    elseif (stat_ /= 0_C_INT) then
+      error stop 'symlink: cannot create symbolic link'
     endif
 
   end subroutine symlink

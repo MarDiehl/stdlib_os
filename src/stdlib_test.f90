@@ -4,8 +4,7 @@ program stdlib_test
   use os_path
 
   implicit none
-  integer :: unit
-  logical :: error
+  integer :: unit,stat
 
   character(len=:), allocatable, dimension(:) :: split_str
   character(len=:), allocatable               :: startdir
@@ -66,8 +65,8 @@ program stdlib_test
   print*, ''
 
   if ( name /= 'Windows' ) then
-    call symlink('test.txt','test.lnk', error)
-    if ( .not. error ) then
+    call symlink('test.txt','test.lnk', stat)
+    if (stat == 0) then
       print*, "exists('test.lnk'): ",   exists('test.lnk')
       print*, "isdir('test.lnk'): ",    isdir('test.lnk')
       print*, "isfile('test.lnk'): ",   isfile('test.lnk')
@@ -99,8 +98,8 @@ program stdlib_test
   print*, ''
 
   if ( name /= 'Windows' ) then
-    call symlink('test_sym','test2_sym')
-    if ( .not. error ) then
+    call symlink('test_sym','test2_sym', stat)
+    if (stat == 0) then
       print*, "exists('test2_sym'): ",  exists('test2_sym')
       print*, "isdir('test2_sym'): ",   isdir('test2_sym')
       print*, "isfile('test2_sym'): ",  isfile('test2_sym')

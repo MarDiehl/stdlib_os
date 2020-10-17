@@ -52,13 +52,11 @@ int rmdir_c(const char *path){
 }
 
 #ifndef _WIN32
-int symlink_c(const char *src, const char *dst, int *supported){
-  *supported = 1;
+int symlink_c(const char *src, const char *dst){
   return symlink(src,dst);
 }
 #else
-int symlink_c(const char *src, const char *dst, int *supported){
-  *supported = 0;
+int symlink_c(const char *src, const char *dst){
   return 1;
 }
 #endif
