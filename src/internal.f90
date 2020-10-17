@@ -6,7 +6,7 @@ module internal
 
   implicit none
 
-   public
+  public
 
   integer, parameter :: USER_NAME_MAX = 32
 

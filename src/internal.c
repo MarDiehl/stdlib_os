@@ -43,7 +43,7 @@ int path_max_c(){
 }
 #else
 
-/* On plain WIndows and MinGW use environment variables */
+/* On plain Windows and MinGW use environment variables */
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define USER "USER"
 #define HOME "HOME"

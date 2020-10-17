@@ -22,7 +22,6 @@ module internal_c
       integer(C_INT) :: PATH_MAX_c
     end function PATH_MAX_c
 
-
   end interface
 
 end module internal_c
