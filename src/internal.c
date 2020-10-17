@@ -38,9 +38,6 @@ void gethome_c(char home[], int *stat){
   }
 }
 
-int path_max_c(){
-  return PATH_MAX;
-}
 #else
 
 /* On plain Windows and MinGW use environment variables */
@@ -50,6 +47,7 @@ int path_max_c(){
 #else
 #define USER "USERNAME"
 #define HOME "USERPROFILE"
+#define MAX_PATH "_MAX_PATH"
 #endif
 
 void getuser_c(char user[], int *stat){
@@ -62,9 +60,6 @@ void gethome_c(char home[], int *stat){
   *stat = (strlen(home) == 0);
 }
 
-int path_max_c(){
-  return _MAX_PATH;
-}
 #endif
 
 

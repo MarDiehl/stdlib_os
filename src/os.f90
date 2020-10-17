@@ -49,7 +49,7 @@ module os
     character(kind=C_CHAR), dimension(:), allocatable :: cwd
     integer(C_INT)                                    :: stat
 
-    allocate(cwd(PATH_MAX()))
+    allocate(cwd(MAX_PATH))
 
     call getcwd_c(cwd,stat)
 

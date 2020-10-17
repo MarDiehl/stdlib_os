@@ -10,6 +10,8 @@ module internal
 
   integer, parameter :: USER_NAME_MAX = 32
 
+  integer(C_INT), bind(C, name="MAX_PATH") :: MAX_PATH
+
   contains
 
   pure function c_f_string(c_string) result(f_string)
@@ -68,7 +70,7 @@ module internal
     character(kind=C_CHAR), dimension(:), allocatable :: home
     integer(C_INT)                                    :: stat
 
-    allocate(home(PATH_MAX()))
+    allocate(home(MAX_PATH))
     call gethome_c(home,stat)
     if(stat /= 0) &
       error stop 'gethome: cannot determine home directory'
@@ -76,16 +78,5 @@ module internal
     gethome = c_f_string(home)
 
   end function gethome
-
-
-  ! ToDo: Check whether the header can be used in Fortran (true parameter!)
-  function PATH_MAX()
-
-    integer(C_INT) :: PATH_MAX
-
-    PATH_MAX = PATH_MAX_c()
-
-  end function PATH_MAX
-
 
 end module internal

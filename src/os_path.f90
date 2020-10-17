@@ -234,7 +234,7 @@ module os_path
       expanduser = substitute(path,gethome(),1,len(user))
     elseif(index(path,'~')==1) then
       deallocate(user)
-      allocate(character(len=PATH_MAX()-1)::user)
+      allocate(character(len=MAX_PATH-1)::user)
       call get_environment_variable('HOME',user,status=stat)
       if(stat==0) then
         expanduser = substitute(path,trim(user),1,1)
@@ -258,7 +258,7 @@ module os_path
     character(len=:), allocatable :: val
     integer :: i,j,stat
 
-    allocate(character(len=PATH_MAX()-1)::val)
+    allocate(character(len=MAX_PATH-1)::val)
     expandvars = path
 
     i=1

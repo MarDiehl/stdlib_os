@@ -17,11 +17,6 @@ module internal_c
       integer(C_INT),                       intent(out) :: stat
     end subroutine gethome_c
 
-    function PATH_MAX_c() bind(C)
-      use, intrinsic :: ISO_C_Binding
-      integer(C_INT) :: PATH_MAX_c
-    end function PATH_MAX_c
-
   end interface
 
 end module internal_c
