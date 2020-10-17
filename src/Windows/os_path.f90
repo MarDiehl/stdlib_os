@@ -1,4 +1,4 @@
-submodule(os_path) os_path_Windows
+submodule(os_path) os_path
 
   contains
 
@@ -17,4 +17,4 @@ submodule(os_path) os_path_Windows
   
   end function isabs
 
-end submodule os_path_Windows
+end submodule os_path

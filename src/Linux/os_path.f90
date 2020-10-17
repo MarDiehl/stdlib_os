@@ -1,4 +1,4 @@
-submodule(os_path) os_path_Cygwin
+submodule(os_path) os_path
 
   contains
   
@@ -15,4 +15,4 @@ submodule(os_path) os_path_Cygwin
   
   end function isabs
 
-end submodule os_path_Cygwin
+end submodule os_path

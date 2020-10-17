@@ -1,4 +1,4 @@
-submodule(os_path) os_path_Linux
+submodule(os_path) os_path
 
   contains
   
@@ -15,4 +15,4 @@ submodule(os_path) os_path_Linux
   
   end function isabs
 
-end submodule os_path_Linux
+end submodule os_path
