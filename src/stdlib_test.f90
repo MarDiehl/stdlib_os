@@ -29,7 +29,7 @@ program stdlib_test
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
 
-  print*, 'name of the operating system: ', os_name
+  print*, 'name of the operating system: ', name
 
   print*, 'current working directory: ',getcwd()
   print*, 'home directory: ',expanduser('~')
@@ -65,7 +65,7 @@ program stdlib_test
   call rename('test2.txt','test.txt')
   print*, ''
 
-  if ( os_id /= OS_Windows ) then
+  if ( name /= 'Windows' ) then
     call symlink('test.txt','test.lnk', error)
     if ( .not. error ) then
       print*, "exists('test.lnk'): ",   exists('test.lnk')
@@ -98,7 +98,7 @@ program stdlib_test
   print*, "getsize('test_sym'): ",  getsize('test_sym')
   print*, ''
 
-  if ( os_id /= OS_Windows ) then
+  if ( name /= 'Windows' ) then
     call symlink('test_sym','test2_sym')
     if ( .not. error ) then
       print*, "exists('test2_sym'): ",  exists('test2_sym')
@@ -117,7 +117,7 @@ program stdlib_test
 
   ! start in defined situation
   startdir = getcwd()
-  if ( os_id /= OS_Windows ) then
+  if ( name /= 'Windows' ) then
     call chdir('/home')
     if(.not. isdir('/bin')) &
       error stop "'/bin' does not exist"
@@ -146,7 +146,7 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if ( os_id /= OS_Windows ) then
+  if ( name /= 'Windows' ) then
     if(getcwd() /= '/home') &
       error stop "getcwd() /= '/home'"
   else
@@ -221,7 +221,7 @@ program stdlib_test
   call rmdir('test_sym' )
 
   ! Under Windows we do not have the symlink, but we do have the file 'test.txt' left
-  if ( os_id /= OS_Windows ) then
+  if ( name /= 'Windows' ) then
     call unlink('test2_sym')
   else
     call unlink('test.txt')

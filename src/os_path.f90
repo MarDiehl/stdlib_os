@@ -511,7 +511,7 @@ module os_path
       l_common = max(1,l_common)
 
       ! Take care of the drive indicator on Windows
-      if ( os_id == OS_Windows ) then
+      if ( name == 'Windows' ) then
         if(start_(2:3) == ':/' .or. start_(2:3) == ':\' ) then
           j = 1
           l_common = 4

@@ -18,11 +18,6 @@ module os
     symlink, &
     unlink
 
-  integer, parameter, public :: OS_LINUX   = 1
-  integer, parameter, public :: OS_DARWIN  = 2  ! Canonical name for MacOSX
-  integer, parameter, public :: OS_CYGWIN  = 2
-  integer, parameter, public :: OS_WINDOWS = 3  ! No difference apparently for plain Windows and MinGW
-
   include "stdlib_os.inc"
 
   contains
