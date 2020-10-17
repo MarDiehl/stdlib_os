@@ -50,6 +50,16 @@ module os_path
     module procedure join5
   end interface join
 
+  interface
+ 
+    module pure function isabs(path)
+      logical                      :: isabs
+      character(len=*), intent(in) :: path
+    end function isabs
+  
+  end interface
+
+
   contains
 
   function abspath(path)
@@ -331,24 +341,6 @@ module os_path
       error stop 'getsize: could not determine file size'
 
   end function getsize
-
-
-  pure function isabs(path)
-
-    logical                      :: isabs
-    character(len=*), intent(in) :: path
-
-    if(len(path) == 0) then
-      isabs = .false.
-    else
-      isabs = path(1:1) == sep
-
-      if ( .not. isabs .and. os_id == OS_Windows ) then
-         isabs = path(2:3) == ':/' .or. path(2:3) == ':\'
-      endif
-    endif
-
-  end function isabs
 
 
   function isfile(path)

@@ -1,4 +1,4 @@
-file(GLOB sources *.f90 *.c)
+file(GLOB sources *.f90 *.c ${CMAKE_SYSTEM_NAME}/*.f90)
 
 add_executable(stdlib_test ${sources})
 install (TARGETS stdlib_test RUNTIME DESTINATION bin)
