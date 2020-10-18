@@ -1,2 +1,3 @@
 ! Name of the operating system
-character(len=*), parameter, public :: name = "@CMAKE_SYSTEM_NAME@"
+character(len=*), parameter, public :: os_name = "@OS_SYSTEM_NAME@"
+integer, parameter, public          :: os_id   = OS_@OS_SYSTEM_NAME@

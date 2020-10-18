@@ -9,12 +9,6 @@ program stdlib_test
   character(len=:), allocatable, dimension(:) :: split_str
   character(len=:), allocatable               :: startdir
 
-!  startdir = relpath('/bin')
-!  write(*,*) 'Relpath: >>', startdir, '<<'
-!  if(relpath('/bin') /= '../bin') &
-!      error stop "relpath('/bin') /= '../bin'"
-!  stop
-
   split_str=split('aaa/bbb/')
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
@@ -28,7 +22,7 @@ program stdlib_test
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
 
-  print*, 'name of the operating system: ', name
+  print*, 'name of the operating system: ', os_name
 
   print*, 'current working directory: ',getcwd()
   print*, 'home directory: ',expanduser('~')
@@ -64,9 +58,9 @@ program stdlib_test
   call rename('test2.txt','test.txt')
   print*, ''
 
-  if ( name /= 'Windows' ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
     call symlink('test.txt','test.lnk', stat)
-    if (stat == 0) then
+    if ( stat /= 0 ) then
       print*, "exists('test.lnk'): ",   exists('test.lnk')
       print*, "isdir('test.lnk'): ",    isdir('test.lnk')
       print*, "isfile('test.lnk'): ",   isfile('test.lnk')
@@ -83,7 +77,7 @@ program stdlib_test
       print*, 'Skipping "link" tests - links may not be supported on this platform'
     endif
   else
-    print*, 'Skipping "link" tests - links not supported on Windows'
+    print*, 'Skipping "link" tests - links not supported on Windows (and MinGW)'
   endif
 
   print*, ''
@@ -97,9 +91,9 @@ program stdlib_test
   print*, "getsize('test_sym'): ",  getsize('test_sym')
   print*, ''
 
-  if ( name /= 'Windows' ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
     call symlink('test_sym','test2_sym', stat)
-    if (stat == 0) then
+    if ( stat /= 0 ) then
       print*, "exists('test2_sym'): ",  exists('test2_sym')
       print*, "isdir('test2_sym'): ",   isdir('test2_sym')
       print*, "isfile('test2_sym'): ",  isfile('test2_sym')
@@ -110,18 +104,19 @@ program stdlib_test
       print*, 'Skipping "link" tests - links may not be supported on this platform'
     endif
   else
-    print*, 'Skipping "link" tests - links not supported on Windows'
+    print*, 'Skipping "link" tests - links not supported on Windows (and MInGW)'
   endif
   print*, ''
 
   ! start in defined situation
   startdir = getcwd()
-  if ( name /= 'Windows' ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+    write(*,*) '--> /home'
     call chdir('/home')
     if(.not. isdir('/bin')) &
       error stop "'/bin' does not exist"
   else
-    print*,'Windows typically does not have /home and /bin directories'
+    print*,'Windows (and MinGW) typically does not have /home and /bin directories'
   endif
 
   ! basename
@@ -145,7 +140,7 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if ( name /= 'Windows' ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
     if(getcwd() /= '/home') &
       error stop "getcwd() /= '/home'"
   else
@@ -220,7 +215,7 @@ program stdlib_test
   call rmdir('test_sym' )
 
   ! Under Windows we do not have the symlink, but we do have the file 'test.txt' left
-  if ( name /= 'Windows' ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
     call unlink('test2_sym')
   else
     call unlink('test.txt')

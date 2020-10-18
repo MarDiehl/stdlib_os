@@ -1,5 +1,6 @@
 module os_path
 
+  use iso_fortran_env, only: int64
   use internal
   use os
   use os_path_c
@@ -308,9 +309,14 @@ module os_path
     real(C_DOUBLE)               :: getatime
     character(len=*), intent(in) :: path
 
-    getatime = getatime_c(f_c_string(path))
-    if(getatime < 0.0) &
-      error stop 'getatime: could not determine file access time'
+    if ( exists(path) ) then
+      getatime = getatime_c(f_c_string(path))
+      if ( getatime < 0.0 ) then
+        getatime = -2.0
+      endif
+    else
+      getatime = -1.0
+    endif
 
   end function getatime
 
@@ -320,9 +326,14 @@ module os_path
     real(C_DOUBLE)               :: getctime
     character(len=*), intent(in) :: path
 
-    getctime = getctime_c(f_c_string(path))
-    if(getctime < 0.0) &
-      error stop 'getctime: could not determine file creation time'
+    if ( exists(path) ) then
+      getctime = getctime_c(f_c_string(path))
+      if(getctime < 0.0) then
+         getctime = -2.0
+      endif
+    else
+      getctime = -1.0
+    endif
 
   end function getctime
 
@@ -332,21 +343,43 @@ module os_path
     real(C_DOUBLE)               :: getmtime
     character(len=*), intent(in) :: path
 
-    getmtime = getmtime_c(f_c_string(path))
-    if(getmtime < 0.0) &
-      error stop 'getmtime: could not determine file modification time'
+    if ( exists(path) ) then
+      getmtime = getmtime_c(f_c_string(path))
+      if(getmtime < 0.0) then
+        getmtime = -2.0
+      endif
+    else
+      getmtime = -1.0
+    endif
 
   end function getmtime
 
 
-  function getsize(path)
+  integer(int64) function getsize(path)
 
-    integer(C_LONG)              :: getsize
     character(len=*), intent(in) :: path
+    integer                      :: ierr
+    integer                      :: lun
 
-    getsize = getsize_c(f_c_string(path))
-    if(getsize < 0) &
-      error stop 'getsize: could not determine file size'
+    !
+    ! Note 1: work around a problem witn Intel Fortran -
+    !         a plain "INQUIRE" causes the program to stop
+    !
+    ! Note 2: a similar problem occurs with inquiring if the
+    !         file is already open. So do not check for this :(
+    !
+    open( newunit = lun, file = path, action = 'read', access = 'stream', iostat = ierr )
+
+    if ( ierr /= 0 ) then
+      getsize = -1
+    else
+      inquire( unit = lun, size = getsize, iostat = ierr )
+      close( lun )
+
+      if ( ierr /= 0 ) then
+        getsize = -1
+      endif
+    endif
 
   end function getsize
 
@@ -483,8 +516,8 @@ module os_path
 
     return_value = samefile_c(f_c_string(path1),f_c_string(path2))
 
-    if(return_value == -1) &
-      error stop 'samefile: cannot access file(s)'
+    !if(return_value == -1) &
+    !  error stop 'samefile: cannot access file(s)'
     samefile = return_value > 0
 
   end function samefile

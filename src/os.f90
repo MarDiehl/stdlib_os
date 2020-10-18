@@ -18,6 +18,14 @@ module os
     symlink, &
     unlink
 
+
+  integer, parameter, public :: OS_LINUX   = 1
+  integer, parameter, public :: OS_DARWIN  = 2  ! Canonical name for MacOSX
+  integer, parameter, public :: OS_CYGWIN  = 3
+  integer, parameter, public :: OS_WINDOWS = 4
+  integer, parameter, public :: OS_MINGW   = 5
+  integer, parameter, public :: OS_MSYS    = 6
+
   include "os.name"
 
   contains
@@ -81,7 +89,7 @@ module os
     endif
 
     stat_ = mkdir_c(f_c_string(path),mode_)
-    
+
     if (present(stat)) then
       stat = int(stat_)
     elseif (stat_ /= 0_C_INT) then
@@ -117,7 +125,7 @@ module os
     integer(C_INT) :: stat_
 
     stat_ = rmdir_c(f_c_string(path))
-    
+
     if (present(stat)) then
       stat = int(stat_)
     elseif (stat_ /= 0_C_INT) then
@@ -153,7 +161,7 @@ module os
     integer(C_INT) :: stat_
 
     stat_ = unlink_c(f_c_string(path))
-    
+
     if (present(stat)) then
       stat = int(stat_)
     elseif (stat_ /= 0_C_INT) then

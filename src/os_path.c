@@ -56,13 +56,6 @@ double getmtime_c(char *path) {
 # endif
 }
 
-long getsize_c(char *path) {
-  struct stat statbuf;
-  if(stat(path, &statbuf) != 0)                                                                     /* error */
-    return -1;
-  return (long)statbuf.st_size;
-}
-
 int isdir_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */

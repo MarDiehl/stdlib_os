@@ -1,1 +1,1 @@
-../Posix/os_path.f90
+include "../Posix/os_path.f90"

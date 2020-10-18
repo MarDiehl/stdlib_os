@@ -1,8 +1,8 @@
-submodule(os_path) os_path
+submodule(os_path) os_path_windows
 
   contains
 
-  pure function isabs(path)
+  pure module function isabs(path)
 
     logical                      :: isabs
     character(len=*), intent(in) :: path
@@ -18,7 +18,7 @@ submodule(os_path) os_path
   end function isabs
 
 
-  function relpath(path,start)
+  module function relpath(path,start)
 
     character(len=*), intent(in)           :: path
     character(len=*), intent(in), optional :: start
@@ -77,4 +77,4 @@ submodule(os_path) os_path
 
   end function relpath
 
-end submodule os_path
+end submodule os_path_windows
