@@ -35,7 +35,7 @@ submodule(os_path) os_path_windows
     l_path = len(path_)
 
     if(.not. present(start)) then
-      start_ = getcwd()
+      start_ = trim_sep(getcwd())
     else
       if(isabs(start)) then
         start_ = normpath(start)

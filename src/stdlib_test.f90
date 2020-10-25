@@ -22,6 +22,10 @@ program stdlib_test
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
 
+  split_str=split('\aaa\bbb')
+  print*, '#'//trim(split_str(1))//'#'
+  print*, '#'//trim(split_str(2))//'#'
+
   print*, 'name of the operating system: ', os_name
 
   print*, 'current working directory: ',getcwd()
@@ -104,7 +108,7 @@ program stdlib_test
       print*, 'Skipping "link" tests - links may not be supported on this platform'
     endif
   else
-    print*, 'Skipping "link" tests - links not supported on Windows (and MInGW)'
+    print*, 'Skipping "link" tests - links not supported on Windows (and MinGW)'
   endif
   print*, ''
 

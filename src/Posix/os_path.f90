@@ -11,6 +11,17 @@ submodule(os_path) os_path
       isabs = .false.
     else
       isabs = path(1:1) == sep
+
+      select case (os_id)
+        case( OS_LINUX, OS_DARWIN )
+          ! No action needed
+
+        case( OS_CYGWIN, OS_MSYS, OS_MINGW )
+          if ( .not. isabs) isabs = path(2:3) == ':/' .or. path(2:3) == ':\'
+
+        case default
+          ! No action needed
+      end select
     endif
 
   end function isabs

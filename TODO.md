@@ -1,6 +1,6 @@
 # Known limitations
 
-The following issues need to be resolved, as of 5 october 2020:
+The following issues need to be resolved, as of 25 october 2020:
 
  * Expanding environment variables does not work if the value is too long. The maximum value is fixed to the value returned by the `path_max()` function.
    See https://unix.stackexchange.com/questions/336934
@@ -9,7 +9,17 @@ The following issues need to be resolved, as of 5 october 2020:
  * The backslash (\) is not properly supported on Windows, making the forward slash the only (and most robust) directory separator character
  * Several functions use ERROR STOP if something goes wrong. This should be changed, but it either requires the function to be non-pure or to use some specific
    value for flagging the error. The subroutines all have an optional argument to capture errors.
- * Currently, the MinGW-w64/MSYS2 platform (the full name of "MinGW") is not distinguished from plain Windows.
+
+   Note:
+       - The function `getcwd()` will stop the program with `ERROR STOP` if the current directory cannot be retrieved. This seems a very basic requirement, though,
+         so the `ERROR STOP` is probably the correct action.
+       - The function `commonpath()` fails in a similar way if absolute and relative paths are combined. This seems incorrect - remediation?
+       - The function `substitute()` does so if the indices for substitution are incorrect. Corrective action seems easy and more desirable
+
+ * Absolute paths on the four (!) Windows platforms amy start with a drive letter and colon, even for Cygwin and MSYS that are more or less Unix-like.
+   For these platforms we accept the forms "c:/xyz" and "c:\xyz" as well.
+
+
  * Document the variables (ford?)
  * Problem with chdir('/home') on MinGW:
    This turns out to be a problem of how MinGW interprets the Windows directories in a Linux style. For instance: "cd /home" works, but chdir("/home")

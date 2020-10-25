@@ -6,7 +6,9 @@ module os_path
   use os_path_c
 
   implicit none
-  character(len=*), parameter, public :: sep = '/'
+  character(len=*), parameter, public  :: sep = '/'
+  character(len=*), parameter, private :: winsep = '\'   ! Used to accomodate for Windows
+  character(len=*), parameter, private :: allsep = '/\'  ! Used to accomodate for Windows
 
   private
   public :: &
@@ -90,7 +92,7 @@ module os_path
     if(len_trim(path) == 0) then
       basename = ''
     else
-      pos = scan(path,sep,back=.true.)
+      pos = scan(path,allsep,back=.true.)
       if(pos == 0) then
         basename = trim(path)
       elseif(pos == len_trim(path)) then
@@ -189,17 +191,17 @@ module os_path
 
     if(len_trim(path) == 0) then
       dirname = ''
-    elseif(verify(path,sep) == 0) then
+    elseif(verify(path,allsep) == 0) then
       dirname = trim(path)
     else
-      pos = scan(path,sep,back=.true.)
+      pos = scan(path,allsep,back=.true.)
       if(pos == 0) then
         dirname = ''
       else
         dirname = path(:pos)
-        if(verify(dirname,sep) /= 0) then
+        if(verify(dirname,allsep) /= 0) then
           do pos=pos,1,-1
-            if(dirname(pos:pos) == sep) then
+            if(dirname(pos:pos) == sep .or. dirname(pos:pos) == winsep) then
               dirname = dirname(:pos-1)
             else
               exit
@@ -531,7 +533,7 @@ module os_path
 
     ! ToDo: //////
     ! ToDo: use basename/dirname
-    s = scan(path,sep,back=.True.)
+    s = scan(path,allsep,back=.True.)
     if(s>1) then
       head = path(:s)
       tail = path(s+1:) ! ???
@@ -588,7 +590,7 @@ module os_path
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
 
-    p_ = trim(p)
+    p_ = trim_sep(p)
     do while (index(p_,sep//curdir//curdir) == 1)
        if(len(p_)>3) then
          p_ = p_(4:)
@@ -604,7 +606,7 @@ module os_path
     character(len=:), allocatable :: p_
     character(len=*), intent(in)  :: p
 
-    p_ = trim(p)
+    p_ = trim_sep(p)
     if(len_trim(p_)>1) then
       if(p_(len_trim(p_):len_trim(p_)) == curdir .and. p_(len_trim(p_)-1:len_trim(p_)-1) == sep) &
         p_ = p_(:len_trim(p_)-1)
@@ -624,7 +626,7 @@ module os_path
 
     integer :: i
 
-    p_ = trim(p)
+    p_ = trim_sep(p)
     do i = len(p_),3,-1
       if (p_(i-2:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//'  '
     enddo
@@ -639,7 +641,7 @@ module os_path
 
     integer :: i
 
-    p_ = trim(p)
+    p_ = trim_sep(p)
     do i = len(p_),2,-1
       if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
     enddo
@@ -660,5 +662,21 @@ module os_path
     if(high<len(parent)) substitute = substitute//parent(high+1:)
 
   end function substitute
+
+  pure function trim_sep(path)
+
+    character(len=:), allocatable :: trim_sep
+    character(len=*), intent(in)  :: path
+
+    integer :: i
+
+    trim_sep = trim(path)
+
+    do i = 1,len(trim_sep)
+      if ( trim_sep(i:i) == winsep ) then
+        trim_sep(i:i) = sep
+      endif
+    enddo
+  end function trim_sep
 
 end module os_path
