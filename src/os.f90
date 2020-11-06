@@ -4,11 +4,32 @@ module os
   use os_c
 
   implicit none
+  private
+  
   character(len=*), parameter, public :: &
     pathsep = ':', &
     curdir = '.'
 
-  private
+  enum, bind(c); enumerator :: &
+    OS_UNDEFINED, &
+    OS_LINUX, &
+    OS_DARWIN, &  ! Canonical name for MacOSX
+    OS_CYGWIN, &
+    OS_WINDOWS, &
+    OS_MINGW, &
+    OS_MSYS
+  end enum
+
+ 
+  public :: &
+    OS_UNDEFINED, &
+    OS_LINUX, &
+    OS_DARWIN, &  ! Canonical name for MacOSX
+    OS_CYGWIN, &
+    OS_WINDOWS, &
+    OS_MINGW, &
+    OS_MSYS
+
   public :: &
     chdir, &
     getcwd, &
@@ -18,13 +39,6 @@ module os
     symlink, &
     unlink
 
-
-  integer, parameter, public :: OS_LINUX   = 1
-  integer, parameter, public :: OS_DARWIN  = 2  ! Canonical name for MacOSX
-  integer, parameter, public :: OS_CYGWIN  = 3
-  integer, parameter, public :: OS_WINDOWS = 4
-  integer, parameter, public :: OS_MINGW   = 5
-  integer, parameter, public :: OS_MSYS    = 6
 
   include "os.name"
 
