@@ -27,11 +27,15 @@ double getatime_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */
     return -1.0;
-# ifndef _WIN32
-  return st_xtime2double(statbuf.st_atim);
-# else
+#ifdef _WIN32
   return (double) statbuf.st_atime;
-# endif
+#else
+#ifdef __APPLE__
+  return (double) statbuf.st_atimespec;
+#else
+  return st_xtime2double(statbuf.st_atim);
+#endif
+#endif
 }
 
 double getctime_c(char *path) {
