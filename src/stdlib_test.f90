@@ -114,13 +114,13 @@ program stdlib_test
 
   ! start in defined situation
   startdir = getcwd()
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_DARWIN ) then
     write(*,*) '--> /home'
     call chdir('/home')
     if(.not. isdir('/bin')) &
       error stop "'/bin' does not exist"
   else
-    print*,'Windows (and MinGW) typically does not have /home and /bin directories'
+    print*,'Windows (and MinGW), macOS typically do not have /home and /bin directories'
   endif
 
   ! basename
