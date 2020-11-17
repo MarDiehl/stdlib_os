@@ -144,7 +144,7 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_DARWIN ) then
     if(getcwd() /= '/home') &
       error stop "getcwd() /= '/home'"
   else
