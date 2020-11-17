@@ -42,22 +42,30 @@ double getctime_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */
     return -1.0;
-# ifndef _WIN32
+#ifdef _WIN32
+  return (double) statbuf.st_mtime; // TODO: shouldn't this be st_ctime?
+#else
+#ifdef __APPLE__
+  return st_xtime2double(statbuf.st_ctimespec);
+#else
   return st_xtime2double(statbuf.st_ctim);
-# else
-  return (double) statbuf.st_mtime;
-# endif
+#endif
+#endif
 }
 
 double getmtime_c(char *path) {
   struct stat statbuf;
   if(stat(path, &statbuf) != 0)                                                                     /* error */
     return -1.0;
-# ifndef _WIN32
-  return st_xtime2double(statbuf.st_mtim);
-# else
+#ifdef _WIN32
   return (double) statbuf.st_mtime;
-# endif
+#else
+#ifdef __APPLE__
+  return st_xtime2double(statbuf.st_mtimespec);
+#else
+  return st_xtime2double(statbuf.st_mtim);
+#endif
+#endif
 }
 
 int isdir_c(char *path) {
