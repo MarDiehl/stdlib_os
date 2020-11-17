@@ -31,7 +31,7 @@ double getatime_c(char *path) {
   return (double) statbuf.st_atime;
 #else
 #ifdef __APPLE__
-  return (double) statbuf.st_atimespec;
+  return st_xtime2double(statbuf.st_atimespec);
 #else
   return st_xtime2double(statbuf.st_atim);
 #endif
