@@ -10,9 +10,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
+    env:
+      FC: gfortran
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
+
+    - name: Install GFortran macOS
+      if: contains(matrix.os, 'macos')
+      run: |
+          ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          which gfortran-9
+          which gfortran
 
     - name: Build and test (Windows)
       if: contains(matrix.os, 'windows')
