@@ -9,6 +9,8 @@ program stdlib_test
   character(len=:), allocatable, dimension(:) :: split_str
   character(len=:), allocatable               :: startdir
 
+  allocate(character(len=100) :: split_str(100))
+
   split_str=split('aaa/bbb/')
   print*, '#'//trim(split_str(1))//'#'
   print*, '#'//trim(split_str(2))//'#'
