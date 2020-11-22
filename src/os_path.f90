@@ -37,6 +37,11 @@ module os_path
     split, &
     splitext
 
+  !
+  ! Make trim_sep public as a workaround for a bug in gfortran 10.x
+  !
+  public :: trim_sep
+
   interface commonpath
     module procedure commonpath1
     module procedure commonpath2
