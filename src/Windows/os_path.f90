@@ -18,11 +18,11 @@ submodule(os_path) os_path_windows
   end function isabs
 
 
-  module function relpath(path,start)
+  module function relpath(path,start) result(r)
 
     character(len=*), intent(in)           :: path
     character(len=*), intent(in), optional :: start
-    character(len=:), allocatable          :: relpath
+    character(len=:), allocatable          :: r
 
     character(len=:), allocatable :: common_, path_, start_
     integer :: l_common, l_path, i, j
@@ -48,12 +48,12 @@ submodule(os_path) os_path_windows
     l_common = len(common_)
 
     if(l_path == l_common) then
-      relpath = ''
+      r = ''
     else
       if(common_ == sep) then
-        relpath = path_(l_common+1:)
+        r = path_(l_common+1:)
       else
-        relpath = path_(l_common+2:)
+        r = path_(l_common+2:)
       endif
     endif
 
@@ -70,10 +70,10 @@ submodule(os_path) os_path_windows
       do i = l_common, len(start_(l_common:))
         if(start_(i:i) == sep) j = j+1
       enddo
-      relpath = repeat(curdir//curdir//sep,j)//relpath
+      r = repeat(curdir//curdir//sep,j)//r
     endif
 
-    relpath = normpath(relpath)
+    r = normpath(r)
 
   end function relpath
 

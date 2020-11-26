@@ -9,22 +9,22 @@ program stdlib_test
   character(len=:), allocatable, dimension(:) :: split_str
   character(len=:), allocatable               :: startdir
 
-  split_str=split('aaa/bbb/')
-  print*, '#'//trim(split_str(1))//'#'
-  print*, '#'//trim(split_str(2))//'#'
-  split_str=split('aaa/bbb')
-  print*, '#'//trim(split_str(1))//'#'
-  print*, '#'//trim(split_str(2))//'#'
-  split_str=split('/aaa/bbb')
-  print*, '#'//trim(split_str(1))//'#'
-  print*, '#'//trim(split_str(2))//'#'
-  split_str=split('//')
-  print*, '#'//trim(split_str(1))//'#'
-  print*, '#'//trim(split_str(2))//'#'
+  !split_str=split('aaa/bbb/')
+  !print*, '#'//trim(split_str(1))//'#'
+  !print*, '#'//trim(split_str(2))//'#'
+  !split_str=split('aaa/bbb')
+  !print*, '#'//trim(split_str(1))//'#'
+  !print*, '#'//trim(split_str(2))//'#'
+  !split_str=split('/aaa/bbb')
+  !print*, '#'//trim(split_str(1))//'#'
+  !print*, '#'//trim(split_str(2))//'#'
+  !split_str=split('//')
+  !print*, '#'//trim(split_str(1))//'#'
+  !print*, '#'//trim(split_str(2))//'#'
 
-  split_str=split('\aaa\bbb')
-  print*, '#'//trim(split_str(1))//'#'
-  print*, '#'//trim(split_str(2))//'#'
+  !split_str=split('\aaa\bbb')
+  !print*, '#'//trim(split_str(1))//'#'
+  !print*, '#'//trim(split_str(2))//'#'
 
   print*, 'name of the operating system: ', os_name
 
@@ -114,13 +114,13 @@ program stdlib_test
 
   ! start in defined situation
   startdir = getcwd()
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_DARWIN ) then
     write(*,*) '--> /home'
     call chdir('/home')
     if(.not. isdir('/bin')) &
       error stop "'/bin' does not exist"
   else
-    print*,'Windows (and MinGW) typically does not have /home and /bin directories'
+    print*,'Windows (and MinGW), macOS typically do not have /home and /bin directories'
   endif
 
   ! basename
@@ -144,7 +144,7 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_DARWIN ) then
     if(getcwd() /= '/home') &
       error stop "getcwd() /= '/home'"
   else
