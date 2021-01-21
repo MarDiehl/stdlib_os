@@ -1,4 +1,4 @@
-module os_ntpath
+module os_path
 
   use iso_fortran_env, only: int64
   use internal
@@ -684,5 +684,4 @@ module os_ntpath
     enddo
   end function trim_sep
 
-end module os_ntpath
-
+end module os_path

@@ -1,4 +1,4 @@
-module os_posixpath
+module os_path
 
   use iso_fortran_env, only: int64
   use internal
@@ -57,16 +57,40 @@ module os_posixpath
 
   interface
 
-    module pure function isabs(path)
-      logical                      :: isabs
+    module function getatime(path)
+      real(C_DOUBLE)               :: getatime
       character(len=*), intent(in) :: path
-    end function isabs
+    end function getatime
 
-    module function relpath(path,start)
-      character(len=*), intent(in)           :: path
-      character(len=*), intent(in), optional :: start
-      character(len=:), allocatable          :: relpath
-    end function relpath
+    module function getctime(path)
+      real(C_DOUBLE)               :: getctime
+      character(len=*), intent(in) :: path
+    end function getctime
+
+    module function getmtime(path)
+      real(C_DOUBLE)               :: getmtime
+      character(len=*), intent(in) :: path
+    end function getmtime
+
+    module function isfile(path)
+      logical                      :: isfile
+      character(len=*), intent(in) :: path
+    end function isfile
+
+    module function isdir(path)
+      logical                      :: isdir
+      character(len=*), intent(in) :: path
+    end function isdir
+
+    module function islink(path)
+      logical                      :: islink
+      character(len=*), intent(in) :: path
+    end function islink
+
+    module function ismount(path)
+      logical                      :: ismount
+      character(len=*), intent(in) :: path
+    end function ismount
 
   end interface
 
@@ -79,8 +103,6 @@ module os_posixpath
     character(len=*), intent(in)  :: path
 
     abspath = normpath(join(getcwd(),path))
-
-
 
   end function abspath
 
@@ -308,55 +330,7 @@ module os_posixpath
   end function expandvars
 
 
-  function getatime(path)
 
-    real(C_DOUBLE)               :: getatime
-    character(len=*), intent(in) :: path
-
-    if ( exists(path) ) then
-      getatime = getatime_c(f_c_string(path))
-      if ( getatime < 0.0 ) then
-        getatime = -2.0
-      endif
-    else
-      getatime = -1.0
-    endif
-
-  end function getatime
-
-
-  function getctime(path)
-
-    real(C_DOUBLE)               :: getctime
-    character(len=*), intent(in) :: path
-
-    if ( exists(path) ) then
-      getctime = getctime_c(f_c_string(path))
-      if(getctime < 0.0) then
-         getctime = -2.0
-      endif
-    else
-      getctime = -1.0
-    endif
-
-  end function getctime
-
-
-  function getmtime(path)
-
-    real(C_DOUBLE)               :: getmtime
-    character(len=*), intent(in) :: path
-
-    if ( exists(path) ) then
-      getmtime = getmtime_c(f_c_string(path))
-      if(getmtime < 0.0) then
-        getmtime = -2.0
-      endif
-    else
-      getmtime = -1.0
-    endif
-
-  end function getmtime
 
 
   integer(int64) function getsize(path)
@@ -366,7 +340,7 @@ module os_posixpath
     integer                      :: lun
 
     !
-    ! Note 1: work around a problem witn Intel Fortran -
+    ! Note 1: work around a problem with Intel Fortran -
     !         a plain "INQUIRE" causes the program to stop
     !
     ! Note 2: a similar problem occurs with inquiring if the
@@ -388,44 +362,7 @@ module os_posixpath
   end function getsize
 
 
-  function isfile(path)
 
-    logical                      :: isfile
-    character(len=*), intent(in) :: path
-
-    isfile = isfile_c(f_c_string(path)) > 0
-
-  end function isfile
-
-
-  function isdir(path)
-
-    logical                      :: isdir
-    character(len=*), intent(in) :: path
-
-    isdir = isdir_c(f_c_string(path)) > 0
-
-  end function isdir
-
-
-  function islink(path)
-
-    logical                      :: islink
-    character(len=*), intent(in) :: path
-
-    islink = islink_c(f_c_string(path)) > 0
-
-  end function islink
-
-
-  function ismount(path)
-
-    logical                      :: ismount
-    character(len=*), intent(in) :: path
-
-    ismount = ismount_c(f_c_string(path)) > 0
-
-  end function ismount
 
 
   pure function join1(path1) result(join)
@@ -681,4 +618,4 @@ module os_posixpath
     enddo
   end function trim_sep
 
-end module os_posixpath
+end module os_path
