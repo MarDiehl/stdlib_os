@@ -1,14 +1,11 @@
-module os_path
+module os_posixpath
 
   use iso_fortran_env, only: int64
   use internal
   use os
-  use os_path_c
 
   implicit none
   character(len=*), parameter, public  :: sep = '/'
-  character(len=*), parameter, private :: winsep = '\'   ! Used to accomodate for Windows
-  character(len=*), parameter, private :: allsep = '/\'  ! Used to accomodate for Windows
 
   private
   public :: &
@@ -684,4 +681,4 @@ module os_path
     enddo
   end function trim_sep
 
-end module os_path
+end module os_posixpath
