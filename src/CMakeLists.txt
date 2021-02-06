@@ -1,9 +1,28 @@
-file(GLOB sources *.f90 *.c ${CMAKE_SYSTEM_NAME}/*.f90)
+file(GLOB sources *.f90 *.F90 *.c)
 
-add_executable(stdlib_test ${sources})
-install (TARGETS stdlib_test RUNTIME DESTINATION bin)
+add_library(
+  "${PROJECT_NAME}_lib"
+  "${sources}"
+)
+set_target_properties(
+  "${PROJECT_NAME}_lib"
+  PROPERTIES
+  OUTPUT_NAME "${PROJECT_NAME}"
+  Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
+target_include_directories(
+  "${PROJECT_NAME}_lib"
+  INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+install(
+  TARGETS "${PROJECT_NAME}_lib"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/How-To-Write-Platform-Checks
 if     (${MINGW})
@@ -25,5 +44,5 @@ endif (${MINGW})
 # create a simple include file: identify the operating system
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/os.name.in
-  ${CMAKE_BINARY_DIR}/os.name
-  )
+  ${CMAKE_CURRENT_BINARY_DIR}/os.name
+)

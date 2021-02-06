@@ -62,7 +62,7 @@ program stdlib_test
   call rename('test2.txt','test.txt')
   print*, ''
 
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_MSYS ) then
     call symlink('test.txt','test.lnk', stat)
     if ( stat /= 0 ) then
       print*, "exists('test.lnk'): ",   exists('test.lnk')
@@ -144,7 +144,7 @@ program stdlib_test
     error stop "dirname('/../') /= '/..'"
 
   ! getcwd
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW .and. os_id /= OS_DARWIN ) then
     if(getcwd() /= '/home') &
       error stop "getcwd() /= '/home'"
   else
@@ -219,7 +219,7 @@ program stdlib_test
   call rmdir('test_sym' )
 
   ! Under Windows we do not have the symlink, but we do have the file 'test.txt' left
-  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW ) then
+  if ( os_id /= OS_Windows .and. os_id /= OS_MINGW  .and. os_id /= OS_MSYS ) then
     call unlink('test2_sym')
   else
     call unlink('test.txt')

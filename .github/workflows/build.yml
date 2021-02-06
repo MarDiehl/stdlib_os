@@ -1,0 +1,164 @@
+name: CI
+on: [push, pull_request]
+
+env:
+  BUILD_DIR: _build
+
+jobs:
+  gcc-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        gcc_v: [9, 10]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+
+    - name: Install GCC (OSX)
+      if: contains(matrix.os, 'macos')
+      run: |
+        brew install gcc@${{ matrix.gcc_v }} || brew upgrade gcc@${{ matrix.gcc_v }} || true
+        brew link gcc@${{ matrix.gcc_v }}
+        ln -s /usr/local/bin/gfortran-${{ matrix.gcc_v }} /usr/local/bin/gfortran
+
+    - name: Install GCC (Linux)
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install -y gcc-${{ matrix.gcc_v }} gfortran-${{ matrix.gcc_v }}
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ matrix.gcc_v }} 100 \
+        --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${{ matrix.gcc_v }} \
+        --slave /usr/bin/gcov gcov /usr/bin/gcov-${{ matrix.gcc_v }}
+
+    - name: Install CMake
+      run: pip3 install ninja cmake
+
+    - name: Configure build
+      run: cmake -B ${{ env.BUILD_DIR }} -G Ninja
+      env:
+        FC: gfortran
+        CC: gcc
+
+    - name: Build project
+      run: cmake --build ${{ env.BUILD_DIR }}
+
+    - name: Run unit tests
+      run: ctest --parallel --output-on-failure
+      working-directory: ${{ env.BUILD_DIR }}
+
+
+  intel-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+
+    env:
+      FC: ifort
+      CC: icc
+      OMP_NUM_THREADS: 2,1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+
+    - name: Add Intel repository
+      run: |
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+
+    - name: Install Intel oneAPI compiler
+      run: |
+        sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+        source /opt/intel/oneapi/setvars.sh
+        printenv >> $GITHUB_ENV
+
+    - name: Install CMake
+      run: pip3 install ninja cmake
+
+    - name: Configure build
+      run: cmake -B ${{ env.BUILD_DIR }} -G Ninja
+      env:
+        FC: ${{ matrix.fc }}
+        CC: ${{ matrix.cc }}
+
+    - name: Build project
+      run: cmake --build ${{ env.BUILD_DIR }}
+
+    - name: Run unit tests
+      run: ctest --parallel --output-on-failure
+      working-directory: ${{ env.BUILD_DIR }}
+
+
+  # Test native MinGW Windows build
+  msys2-build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: [
+          { msystem: MSYS,    arch: x86_64 },
+          { msystem: MINGW64, arch: x86_64 },
+          { msystem: MINGW32, arch: i686   }
+        ]
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup MinGW native environment
+      uses: msys2/setup-msys2@v2
+      if: contains(matrix.msystem, 'MINGW')
+      with:
+        msystem: ${{ matrix.msystem }}
+        update: false
+        install: >-
+          git
+          mingw-w64-${{ matrix.arch }}-gcc
+          mingw-w64-${{ matrix.arch }}-gcc-fortran
+          mingw-w64-${{ matrix.arch }}-cmake
+          mingw-w64-${{ matrix.arch }}-ninja
+
+    - name: Setup msys POSIX environment
+      uses: msys2/setup-msys2@v2
+      if: contains(matrix.msystem, 'MSYS')
+      with:
+        msystem: MSYS
+        update: false
+        install: >-
+          git
+          gcc
+          gcc-fortran
+          cmake
+          ninja
+
+    - name: Configure build
+      run: cmake -B ${{ env.BUILD_DIR }} -G Ninja
+      env:
+        FC: gfortran
+        CC: gcc
+
+    - name: Build project
+      run: cmake --build ${{ env.BUILD_DIR }}
+
+    - name: Run unit tests
+      run: ctest --parallel --output-on-failure
+      working-directory: ${{ env.BUILD_DIR }}
