@@ -1,4 +1,6 @@
 file(GLOB sources *.f90 *.F90 *.c)
+list(FILTER sources EXCLUDE REGEX ".*posix.*")
+list(FILTER sources EXCLUDE REGEX ".*windows.*")
 
 add_library(
   "${PROJECT_NAME}_lib"

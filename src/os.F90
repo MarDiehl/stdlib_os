@@ -6,8 +6,12 @@ module os
   implicit none
   private
   
-  character(len=*), parameter, public :: &
+  character, parameter, public :: &
+#ifndef _WIN32
     pathsep = ':', &
+#else
+    pathsep = ';', &
+#endif
     curdir = '.'
 
   enum, bind(c); enumerator :: &
