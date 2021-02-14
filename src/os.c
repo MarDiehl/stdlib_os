@@ -1,9 +1,9 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #ifndef _WIN32
 #include <unistd.h>
 #else
@@ -11,56 +11,39 @@
 #if !defined(__MINGW32__) && !defined(__MINGW64__)
 #define PATH_MAX _MAX_PATH
 #endif
-#define getcwd  _getcwd
-#define chdir   _chdir
-#define mkdir   _mkdir
-#define rmdir   _rmdir
-#define unlink  _unlink
+#define getcwd _getcwd
+#define chdir _chdir
+#define mkdir _mkdir
+#define rmdir _rmdir
+#define unlink _unlink
 #endif
 
-int chdir_c(const char *path){
-  return chdir(path);
-}
+int chdir_c(const char *path) { return chdir(path); }
 
-void getcwd_c(char cwd[], int *stat){
+void getcwd_c(char cwd[], int *stat) {
   char cwd_tmp[PATH_MAX];
-  if(getcwd(cwd_tmp, sizeof(cwd_tmp)) != NULL){
-    strcpy(cwd,cwd_tmp); /* use strncpy or strlcpy */
+  if (getcwd(cwd_tmp, sizeof(cwd_tmp)) != NULL) {
+    strcpy(cwd, cwd_tmp); /* use strncpy or strlcpy */
     *stat = 0;
-  }
-  else{
+  } else {
     *stat = 1;
   }
 }
 
 #ifndef WIN32
-int mkdir_c(const char *path, int *mode){
-  return mkdir(path,(mode_t)*mode);
-}
+int mkdir_c(const char *path, int *mode) { return mkdir(path, (mode_t)*mode); }
 #else
-int mkdir_c(const char *path, int *mode){
-  return mkdir(path);
-}
+int mkdir_c(const char *path, int *mode) { return mkdir(path); }
 #endif
 
-int rename_c(const char *src, const char *dst){
-  return rename(src,dst);
-}
+int rename_c(const char *src, const char *dst) { return rename(src, dst); }
 
-int rmdir_c(const char *path){
-  return rmdir(path);
-}
+int rmdir_c(const char *path) { return rmdir(path); }
 
 #ifndef _WIN32
-int symlink_c(const char *src, const char *dst){
-  return symlink(src,dst);
-}
+int symlink_c(const char *src, const char *dst) { return symlink(src, dst); }
 #else
-int symlink_c(const char *src, const char *dst){
-  return 1;
-}
+int symlink_c(const char *src, const char *dst) { return 1; }
 #endif
 
-int unlink_c(const char *path){
-  return unlink(path);
-}
+int unlink_c(const char *path) { return unlink(path); }

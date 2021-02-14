@@ -1,0 +1,13 @@
+add_executable(
+  "${PROJECT_NAME}_test"
+  "stdlib_test.f90"
+)
+target_link_libraries(
+  "${PROJECT_NAME}_test"
+  PRIVATE
+  "${PROJECT_NAME}_lib"
+)
+add_test(
+  "OS"
+  "${PROJECT_NAME}_test"
+)

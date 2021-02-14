@@ -16,31 +16,27 @@
 
 /* https://stackoverflow.com/questions/8953424 */
 #ifndef _WIN32
-void getuser_c(char user[], int *stat){
+void getuser_c(char user[], int *stat) {
   struct passwd *pw = getpwuid(geteuid());
-  if (pw){
-    strcpy(user,pw->pw_name);
+  if (pw) {
+    strcpy(user, pw->pw_name);
     *stat = 0;
-    }
-  else{
+  } else {
     *stat = 1;
   }
 }
 
-void gethome_c(char home[], int *stat){
+void gethome_c(char home[], int *stat) {
   struct passwd *pw = getpwuid(getuid());
-  if (pw){
-    strcpy(home,pw->pw_dir);
+  if (pw) {
+    strcpy(home, pw->pw_dir);
     *stat = 0;
-    }
-  else{
+  } else {
     *stat = 1;
   }
 }
 
-int path_max_c(){
-  return PATH_MAX;
-}
+int path_max_c() { return PATH_MAX; }
 #else
 
 /* On plain Windows and MinGW use environment variables */
@@ -52,19 +48,15 @@ int path_max_c(){
 #define HOME "USERPROFILE"
 #endif
 
-void getuser_c(char user[], int *stat){
-  strcpy( user, getenv(USER) );
+void getuser_c(char user[], int *stat) {
+  strcpy(user, getenv(USER));
   *stat = (strlen(user) == 0);
 }
 
-void gethome_c(char home[], int *stat){
-  strcpy( home, getenv(HOME) );
+void gethome_c(char home[], int *stat) {
+  strcpy(home, getenv(HOME));
   *stat = (strlen(home) == 0);
 }
 
-int path_max_c(){
-  return _MAX_PATH;
-}
+int path_max_c() { return _MAX_PATH; }
 #endif
-
-
