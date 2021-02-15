@@ -58,9 +58,9 @@ module os_path
 contains
 
 #ifndef _WIN32
-  include "os_path_posix.f90"
+  include "os_path_posix.f90.inc"
 #else
-  include "os_path_windows.f90"
+  include "os_path_windows.f90.inc"
 #endif
 
   function abspath(path)
