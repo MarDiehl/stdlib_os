@@ -24,11 +24,14 @@ module os
     OS_MSYS
   end enum
 
+  character(len=*),            parameter, public :: os_name = "OS_SYSTEM_NAME"
+  integer(kind(OS_UNDEFINED)), parameter, public :: os_id   = OS_SYSTEM_ID
+
 
   public :: &
     OS_UNDEFINED, &
     OS_LINUX, &
-    OS_DARWIN, &  ! Canonical name for MacOSX
+    OS_DARWIN, &
     OS_CYGWIN, &
     OS_WINDOWS, &
     OS_MINGW, &
@@ -42,9 +45,6 @@ module os
     rmdir, &
     symlink, &
     unlink
-
-
-  include "os.name"
 
   contains
 

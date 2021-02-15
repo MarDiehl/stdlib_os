@@ -43,8 +43,6 @@ else  (${MINGW})
   message(FATAL_ERROR "Unknown system")
 endif (${MINGW})
 
-# create a simple include file: identify the operating system
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/os.name.in
-  ${CMAKE_CURRENT_BINARY_DIR}/os.name
-)
+add_compile_definitions(OS_SYSTEM_NAME=${OS_SYSTEM_NAME})
+add_compile_definitions(OS_SYSTEM_ID=OS_${OS_SYSTEM_NAME})
+add_compile_definitions(OS_SYSTEM_TYPE=${OS_SYSTEM_TYPE})
