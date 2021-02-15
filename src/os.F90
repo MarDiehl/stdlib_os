@@ -5,7 +5,7 @@ module os
 
   implicit none
   private
-  
+
   character, parameter, public :: &
 #ifndef _WIN32
     pathsep = ':', &
@@ -24,7 +24,7 @@ module os
     OS_MSYS
   end enum
 
- 
+
   public :: &
     OS_UNDEFINED, &
     OS_LINUX, &

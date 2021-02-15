@@ -6,9 +6,11 @@ module os_path
   use os_path_c
 
   implicit none
+#ifndef _WIN32
   character, parameter, public  :: sep = '/'
-  character, parameter, private :: winsep = '\'   ! Used to accomodate for Windows
-  character, parameter, private :: allsep = '/\'  ! Used to accomodate for Windows
+#else
+  character, parameter, public  :: sep = '/'
+#endif
 
   private
   public :: &
@@ -55,14 +57,18 @@ module os_path
 
 contains
 
+#ifndef _WIN32
+  include "os_path_posix.f90"
+#else
+  include "os_path_windows.f90"
+#endif
+
   function abspath(path)
 
     character(len=:), allocatable :: abspath
     character(len=*), intent(in)  :: path
 
     abspath = normpath(join(getcwd(),path))
-
-
 
   end function abspath
 
@@ -455,29 +461,6 @@ contains
 
   end function samefile
 
-  function split(path)
-
-    character(len=*), intent(in)  :: path
-    character(len=:), allocatable :: head,tail
-    character(len=:), allocatable, dimension(:) :: split
-    integer :: s
-
-    ! ToDo: //////
-    ! ToDo: use basename/dirname
-    s = scan(path,allsep,back=.True.)
-    if(s>1) then
-      head = path(:s)
-      tail = path(s+1:) ! ???
-    else
-      head = path
-      tail = ''
-    endif
-
-    allocate(character(len=max(len(head),len(tail)))::split(2))
-    split(1) = head
-    split(2) = tail
-
-  end function split
 
   ! splitdrive
 
@@ -516,70 +499,6 @@ contains
   end function clean
 
 
-  pure function clean_lead(p) result(p_)
-
-    character(len=:), allocatable :: p_
-    character(len=*), intent(in)  :: p
-
-    p_ = trim_sep(p)
-    do while (index(p_,sep//curdir//curdir) == 1)
-       if(len(p_)>3) then
-         p_ = p_(4:)
-       else
-         p_ = sep
-       endif
-    enddo
-
-  end function clean_lead
-
-  pure function clean_trail(p) result(p_)
-
-    character(len=:), allocatable :: p_
-    character(len=*), intent(in)  :: p
-
-    p_ = trim_sep(p)
-    if(len_trim(p_)>1) then
-      if(p_(len_trim(p_):len_trim(p_)) == curdir .and. p_(len_trim(p_)-1:len_trim(p_)-1) == sep) &
-        p_ = p_(:len_trim(p_)-1)
-    endif
-
-    if(len_trim(p_)>1) then
-      if(p_(len_trim(p_):len_trim(p_)) == sep) p_ = p_(:len_trim(p_)-1)
-    endif
-
-  end function clean_trail
-
-
-  pure function remove_curdir(p) result(p_)
-
-    character(len=:), allocatable :: p_
-    character(len=*), intent(in)  :: p
-
-    integer :: i
-
-    p_ = trim_sep(p)
-    do i = len(p_),3,-1
-      if (p_(i-2:i) == sep//curdir//sep) p_(i-1:) = p_(i+1:)//'  '
-    enddo
-    p_ = trim(p_)
-
-  end function remove_curdir
-
-  pure function remove_sep(p) result(p_)
-
-    character(len=:), allocatable :: p_
-    character(len=*), intent(in)  :: p
-
-    integer :: i
-
-    p_ = trim_sep(p)
-    do i = len(p_),2,-1
-      if (p_(i-1:i) == sep//sep) p_(i-1:) = p_(i:)//' '
-    enddo
-    p_ = trim(p_)
-
-  end function remove_sep
-
   pure function substitute(parent,substituent,low,high)
 
     character(len=:), allocatable :: substitute
@@ -593,29 +512,5 @@ contains
     if(high<len(parent)) substitute = substitute//parent(high+1:)
 
   end function substitute
-
-
-#ifndef _WIN32
-  include "os_path_posix.f90"
-#else
-  include "os_path_windows.f90"
-#endif
-
-  pure function trim_sep(path)
-
-    character(len=:), allocatable :: trim_sep
-    character(len=*), intent(in)  :: path
-
-    integer :: i
-
-    trim_sep = trim(path)
-
-    do i = 1,len(trim_sep)
-      if ( trim_sep(i:i) == winsep ) then
-        trim_sep(i:i) = sep
-      endif
-    enddo
-  end function trim_sep
-
 
 end module os_path
